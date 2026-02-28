@@ -1,19 +1,65 @@
-use color_eyre::eyre::ContextCompat;
-use log::info;
-use nusb::transfer::{Bulk, ControlOut, ControlType, In, Out, Recipient, TransferError};
-use nusb::{MaybeFuture, list_devices};
-use std::io::{Error, ErrorKind, Read, Write};
-use std::time::Duration;
+use clap::Parser;
+use color_eyre::eyre::{ContextCompat, bail};
+use log::{error, info};
+use nusb::{
+    Endpoint, MaybeFuture, list_devices,
+    transfer::{Buffer, Bulk, In, Out, TransferError},
+};
+use std::{
+    fs::File,
+    io::{BufReader, Read, Seek, SeekFrom},
+    path::PathBuf,
+    thread::sleep,
+    time::Duration,
+};
 
-const USB_TIMEOUT: Duration = Duration::from_millis(5050);
+const USB_TIMEOUT: Duration = Duration::from_millis(500);
 
-fn write_usb(message: &[u8], interface: &mut nusb::Interface) -> std::io::Result<()> {
-    Ok(())
+fn write_usb(
+    ep_out: &mut Endpoint<Bulk, Out>,
+    message: impl Into<Vec<u8>>,
+) -> Result<(), TransferError> {
+    let buf = message.into();
+    ep_out.transfer_blocking(buf.into(), USB_TIMEOUT).status
+}
+
+fn read_usb(ep_in: &mut Endpoint<Bulk, In>, requested_len: usize) -> Result<Buffer, TransferError> {
+    let buf = Buffer::new(512); // FIXME: don't create buffer everytime?
+    ep_in.transfer_blocking(buf, USB_TIMEOUT).into_result()
+}
+
+#[derive(Parser)]
+struct Args {
+    nsp_dir: PathBuf,
 }
 
 fn main() -> color_eyre::Result<()> {
-    env_logger::init();
+    env_logger::builder().format_source_path(true).init();
     color_eyre::install()?;
+
+    let args = Args::parse();
+    if !args.nsp_dir.is_dir() {
+        bail!("NSP directory is not a directory");
+    }
+    if !args.nsp_dir.exists() {
+        bail!("NSP directory does not exist");
+    }
+
+    let nsp_paths: Vec<_> = args
+        .nsp_dir
+        .read_dir()?
+        .filter_map(|entry_result| {
+            let entry = entry_result.ok()?;
+            let path = entry.path();
+            (path.extension()? == "nsp").then_some(path)
+        })
+        .collect();
+    if nsp_paths.is_empty() {
+        bail!("no NSPs found in given directory");
+    }
+    let total_path_str_len = nsp_paths
+        .iter()
+        .fold(0, |acc, path| acc + path.as_os_str().len() + 1); // +1 for \n
 
     let device_info = list_devices()
         .wait()?
@@ -26,39 +72,140 @@ fn main() -> color_eyre::Result<()> {
         device_info.device_address()
     );
 
-    const HOMEBREW_CONFIGURATION: u8 = 1;
     let device = device_info.open().wait()?;
-    device.set_configuration(HOMEBREW_CONFIGURATION).wait()?; // TODO: check if needed?
+    // const HOMEBREW_CONFIGURATION: u8 = 1;
+    // device.set_configuration(HOMEBREW_CONFIGURATION).wait()?;
 
     let interface = device.claim_interface(0).wait()?;
+    let mut ep_out = interface.endpoint::<Bulk, Out>(0x01)?;
+    ep_out.clear_halt().wait()?;
+    let mut ep_in = interface.endpoint::<Bulk, In>(0x81)?;
+    ep_in.clear_halt().wait()?;
 
-    const PADDING: &[u8] = &[0u8; 8];
-    let message = [
-        "TUL0".as_bytes(),
-        &1u32.to_le_bytes(),
-        PADDING,
-        "test\n".as_bytes(),
-    ]
-    .concat();
-    // println!("message: {:?}", &message);
+    // TODO: handle transfer cancelled gracefully
+    write_usb(&mut ep_out, "TUL0")?;
+    write_usb(&mut ep_out, &total_path_str_len.to_le_bytes()[..4])?;
+    write_usb(&mut ep_out, [0u8; 8])?;
 
-    const OUT_ENDPOINT_ADDRESS: u8 = 0x01;
-    let mut writer = interface
-        .endpoint::<Bulk, Out>(OUT_ENDPOINT_ADDRESS)?
-        .writer(128); // NOTE: how to choose buffer size?
+    sleep(Duration::from_millis(100));
+    for nsp_path in &nsp_paths {
+        write_usb(&mut ep_out, format!("{}\n", nsp_path.to_str().unwrap()))?;
+    }
+    info!("sent pre-stuff");
 
-    writer.write_all(&message)?;
-    writer.with_write_timeout(USB_TIMEOUT).flush()?;
+    loop {
+        info!("waiting for header...");
+        let command_header = ep_in
+            .transfer_blocking(Buffer::new(512), Duration::MAX)
+            .into_result()?;
+        info!("got header: {:#?}", &command_header);
 
-    const IN_ENDPOINT_ADDRESS: u8 = 0x81;
-    let mut reader = interface
-        .endpoint::<Bulk, In>(IN_ENDPOINT_ADDRESS)?
-        .reader(128); // NOTE: how to choose buffer size?
-    const MAGIC: &[u8] = "TUC0".as_bytes();
-    let mut buf = [0; MAGIC.len()];
-    println!("start reading");
-    reader.read_exact(&mut buf)?;
-    println!("buf: {:?}", buf);
+        if &command_header[..4] != b"TUC0" {
+            error!("invalid command header magic. continuing to next iteration...");
+            continue;
+        }
+        info!("correct command header magic");
+
+        let command_type: [u8; 1] = command_header[4..5].try_into().unwrap();
+        let command_id: [u8; 4] = command_header[8..12].try_into().unwrap();
+        let data_size = u64::from_le_bytes(command_header[12..20].try_into().unwrap());
+
+        info!(
+            "Command type: {:?}, Command id: {:?}, Data size: {}",
+            &command_type, &command_id, data_size
+        );
+
+        match command_id {
+            tinfoil_command_ids::EXIT => {
+                info!("got exit command, exiting...");
+                break;
+            }
+            tinfoil_command_ids::FILE_RANGE => {
+                info!("got file range command");
+                file_range_command(&nsp_paths, &mut ep_in, &mut ep_out, data_size)?
+            }
+            _ => bail!("invalid command ID encountered!"),
+        }
+    }
 
     Ok(())
+}
+
+fn file_range_command(
+    nsp_paths: &[PathBuf],
+    ep_in: &mut Endpoint<Bulk, In>,
+    ep_out: &mut Endpoint<Bulk, Out>,
+    data_size: u64,
+) -> color_eyre::Result<()> {
+    let file_range_header = read_usb(ep_in, 0x20)?;
+
+    let range_size = usize::from_le_bytes(file_range_header[..8].try_into().unwrap());
+    let range_offset = u64::from_le_bytes(file_range_header[8..16].try_into().unwrap());
+    let nsp_name_len = usize::from_le_bytes(file_range_header[16..24].try_into().unwrap());
+
+    let nsp_name_buf = read_usb(ep_in, nsp_name_len)?;
+    let nsp_name = str::from_utf8(&nsp_name_buf)?;
+
+    info!(
+        "Range size: {}, Range offset: {}, Name len: {}, Name: {}",
+        range_size, range_offset, nsp_name_len, nsp_name,
+    );
+
+    send_response_header(ep_out, range_size)?;
+
+    let file = File::open(nsp_name)?;
+    let mut reader = BufReader::new(file);
+
+    reader.seek(SeekFrom::Start(range_offset))?;
+
+    let mut current_offset = 0;
+    let end_offset = range_size;
+    let mut read_size = 0x100000;
+
+    let mut buf = vec![0u8; read_size];
+
+    while current_offset < end_offset {
+        if current_offset + read_size >= end_offset {
+            info!("too big read_size ({}), resizing...", read_size);
+            read_size = end_offset - current_offset;
+            buf.resize(read_size, 0u8);
+        }
+        reader.read_exact(&mut buf)?;
+
+        ep_out.transfer_blocking(buf.clone().into(), Duration::MAX);
+
+        info!("sent {} bytes", read_size);
+
+        current_offset += read_size;
+    }
+
+    Ok(())
+}
+
+fn send_response_header(
+    ep_out: &mut Endpoint<Bulk, Out>,
+    range_size: usize,
+) -> color_eyre::Result<()> {
+    write_usb(ep_out, b"TUC0")?;
+
+    // TODO: a single u32?
+    write_usb(ep_out, tinfoil_command_types::RESPONSE)?;
+    write_usb(ep_out, [0u8; 3])?;
+
+    write_usb(ep_out, tinfoil_command_ids::FILE_RANGE)?;
+
+    // TODO: also simplify this padding?
+    write_usb(ep_out, range_size.to_le_bytes())?;
+    write_usb(ep_out, [0u8; 0xC])?;
+
+    Ok(())
+}
+
+mod tinfoil_command_types {
+    pub const RESPONSE: [u8; 1] = [0u8];
+}
+
+mod tinfoil_command_ids {
+    pub const EXIT: [u8; 4] = 0u32.to_le_bytes();
+    pub const FILE_RANGE: [u8; 4] = 1u32.to_le_bytes();
 }
