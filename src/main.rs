@@ -23,8 +23,10 @@ fn write_usb(
     ep_out.transfer_blocking(buf.into(), USB_TIMEOUT).status
 }
 
-fn read_usb(ep_in: &mut Endpoint<Bulk, In>, requested_len: usize) -> Result<Buffer, TransferError> {
-    let buf = Buffer::new(512); // FIXME: don't create buffer everytime?
+fn read_usb(ep_in: &mut Endpoint<Bulk, In>) -> Result<Buffer, TransferError> {
+    // TODO: don't create buffer everytime?
+    // TODO: figure out if 512 is universal buffer size or just my machine?
+    let buf = Buffer::new(512);
     ep_in.transfer_blocking(buf, USB_TIMEOUT).into_result()
 }
 
@@ -73,9 +75,6 @@ fn main() -> color_eyre::Result<()> {
     );
 
     let device = device_info.open().wait()?;
-    // const HOMEBREW_CONFIGURATION: u8 = 1;
-    // device.set_configuration(HOMEBREW_CONFIGURATION).wait()?;
-
     let interface = device.claim_interface(0).wait()?;
     let mut ep_out = interface.endpoint::<Bulk, Out>(0x01)?;
     ep_out.clear_halt().wait()?;
@@ -122,7 +121,7 @@ fn main() -> color_eyre::Result<()> {
             }
             tinfoil_command_ids::FILE_RANGE => {
                 info!("got file range command");
-                file_range_command(&nsp_paths, &mut ep_in, &mut ep_out, data_size)?
+                file_range_command(&mut ep_in, &mut ep_out)?
             }
             _ => bail!("invalid command ID encountered!"),
         }
@@ -132,28 +131,26 @@ fn main() -> color_eyre::Result<()> {
 }
 
 fn file_range_command(
-    nsp_paths: &[PathBuf],
     ep_in: &mut Endpoint<Bulk, In>,
     ep_out: &mut Endpoint<Bulk, Out>,
-    data_size: u64,
 ) -> color_eyre::Result<()> {
-    let file_range_header = read_usb(ep_in, 0x20)?;
+    let file_range_header = read_usb(ep_in)?;
 
     let range_size = usize::from_le_bytes(file_range_header[..8].try_into().unwrap());
     let range_offset = u64::from_le_bytes(file_range_header[8..16].try_into().unwrap());
     let nsp_name_len = usize::from_le_bytes(file_range_header[16..24].try_into().unwrap());
 
-    let nsp_name_buf = read_usb(ep_in, nsp_name_len)?;
-    let nsp_name = str::from_utf8(&nsp_name_buf)?;
+    let nsp_name_buf = read_usb(ep_in)?;
+    let nsp_path = str::from_utf8(&nsp_name_buf)?;
 
     info!(
         "Range size: {}, Range offset: {}, Name len: {}, Name: {}",
-        range_size, range_offset, nsp_name_len, nsp_name,
+        range_size, range_offset, nsp_name_len, nsp_path,
     );
 
     send_response_header(ep_out, range_size)?;
 
-    let file = File::open(nsp_name)?;
+    let file = File::open(nsp_path)?;
     let mut reader = BufReader::new(file);
 
     reader.seek(SeekFrom::Start(range_offset))?;
