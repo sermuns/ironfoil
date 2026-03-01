@@ -1,7 +1,11 @@
 // TODO: handle transfer cancelled gracefully
 
 use clap::Parser;
-use color_eyre::eyre::{ContextCompat, bail};
+use color_eyre::{
+    Section,
+    config::Theme,
+    eyre::{ContextCompat, bail, eyre},
+};
 use indicatif::{ProgressBar, ProgressStyle};
 use log::{debug, error, info, warn};
 use nusb::{
@@ -21,9 +25,18 @@ const USB_TIMEOUT: Duration = Duration::from_millis(500);
 fn write_usb(
     ep_out: &mut Endpoint<Bulk, Out>,
     message: impl Into<Vec<u8>>,
-) -> Result<(), TransferError> {
+) -> color_eyre::Result<()> {
     let buf = message.into();
-    ep_out.transfer_blocking(buf.into(), USB_TIMEOUT).status
+    ep_out
+        .transfer_blocking(buf.into(), USB_TIMEOUT)
+        .status
+        .map_err(|e| match e {
+            TransferError::Cancelled => eyre!("Nintendo Switch is not accepting transfers.\n Is Awoo Installer open in the menu 'Install Over USB'?"),
+            TransferError::Fault | TransferError::Stall => eyre!("USB connection error"),
+            TransferError::Disconnected => eyre!("USB has disconnected"),
+            TransferError::InvalidArgument => eyre!("Malformed data during transfer... oops!"),
+            TransferError::Unknown(i) => eyre!("Unknown error {}", i),
+        })
 }
 
 fn read_usb(ep_in: &mut Endpoint<Bulk, In>) -> Result<Buffer, TransferError> {
@@ -40,14 +53,18 @@ struct Args {
 
 fn main() -> color_eyre::Result<()> {
     env_logger::builder().format_source_path(true).init();
-    color_eyre::install()?;
+    color_eyre::config::HookBuilder::default()
+        .display_env_section(false)
+        .display_location_section(false)
+        .install()?;
 
     let args = Args::parse();
-    if !args.nsp_dir.is_dir() {
-        bail!("NSP directory is not a directory");
-    }
+
     if !args.nsp_dir.exists() {
-        bail!("NSP directory does not exist");
+        bail!("Given path ({}) does not exist", args.nsp_dir.display())
+    }
+    if !args.nsp_dir.is_dir() {
+        bail!("Given path ({}) is not a directory", args.nsp_dir.display())
     }
 
     let nsp_paths: Vec<_> = args
@@ -56,24 +73,28 @@ fn main() -> color_eyre::Result<()> {
         .filter_map(|entry_result| {
             let entry = entry_result.ok()?;
             let path = entry.path();
-            if path.extension()? != "nsp" {
-                return None;
-            }
-            Some(path.into_os_string().into_string().unwrap() + "\n")
+            (path.extension()? == "nsp")
+                .then_some(path.into_os_string().into_string().unwrap() + "\n")
         })
         .collect();
     if nsp_paths.is_empty() {
-        bail!("no NSPs found in given directory");
+        bail!(
+            "No NSPs found in given directory ({})",
+            args.nsp_dir.display()
+        )
     }
-    let total_nsp_paths_len = nsp_paths.iter().fold(0, |acc, path| acc + path.len());
+    let all_paths_string_length = nsp_paths.iter().fold(0, |acc, path| acc + path.len());
 
     let device_info = list_devices()
         .wait()?
         .find(|dev| dev.vendor_id() == 0x57e && dev.product_id() == 0x3000)
-        .wrap_err("unable to discover NS through USB")?;
+        .wrap_err("Unable to discover Nintendo Switch through USB.")
+        .suggestion(
+            "Ensure the Nintendo Switch is awake and connected via cable to this computer.",
+        )?;
 
     info!(
-        "NS discovered at bus {} and address {}",
+        "Nintendo Switch discovered at bus {} and address {}",
         device_info.bus_id(),
         device_info.device_address()
     );
@@ -87,14 +108,14 @@ fn main() -> color_eyre::Result<()> {
 
     debug!("sending nsp list");
     write_usb(&mut ep_out, "TUL0")?;
-    write_usb(&mut ep_out, &total_nsp_paths_len.to_le_bytes()[..4])?;
+    write_usb(&mut ep_out, &all_paths_string_length.to_le_bytes()[..4])?;
     write_usb(&mut ep_out, [0u8; 8])?;
     for nsp_path in &nsp_paths {
         write_usb(&mut ep_out, nsp_path.as_str())?;
     }
 
     let mut pb = ProgressBar::no_length().with_style(
-        ProgressStyle::with_template("[{elapsed}] ETA: {eta} {wide_bar} {binary_bytes_per_sec} {binary_bytes}/{binary_total_bytes}").unwrap(),
+        ProgressStyle::with_template("ETA: {eta} ({binary_bytes_per_sec}) {wide_bar} {binary_bytes} of {binary_total_bytes} sent").unwrap(),
     );
 
     loop {
@@ -157,8 +178,10 @@ fn file_range_command(
     {
         warn!("{:#?}", nsps);
         warn!("requested: {:#?}", nsp_path);
-        bail!("NS tried to request NSP not present on host");
+        bail!("Nintendo Switch tried to request NSP not present on host");
     };
+
+    info!("sending {}", &nsp_path);
 
     info!(
         "Range size: {}, Range offset: {}, Name len: {}, Name: {}",
@@ -185,16 +208,15 @@ fn file_range_command(
 
     while current_offset < end_offset {
         if current_offset + read_size >= end_offset {
-            info!("too big read_size ({}), resizing...", read_size);
+            debug!("too big read_size ({}), resizing...", read_size);
             read_size = end_offset - current_offset;
             buf.resize(read_size, 0u8);
-            pb.reset_elapsed();
         }
         reader.read_exact(&mut buf)?;
 
         ep_out.transfer_blocking(buf.clone().into(), Duration::MAX);
 
-        info!("sent {} bytes", read_size);
+        debug!("sent {} bytes", read_size);
 
         current_offset += read_size;
         pb.set_position(current_offset as u64);
