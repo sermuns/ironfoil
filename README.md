@@ -6,7 +6,7 @@ A tiny command-line re-implementation of [NS-USBloader](https://github.com/devel
 
 ## Installation
 
-When I can think of a better name than `ns-usbloader-rs` (#1) and have polished the code a bit more, I will publish this as a crate and start publishing binaries.
+When I can think of a better name than `ns-usbloader-rs` ([help me!](https://github.com/sermuns/ns-usbloader-rs/issues/1)) and have polished the code a bit more, I will publish this as a crate and start publishing binaries.
 
 As of now, installation from source is the only options.
 
