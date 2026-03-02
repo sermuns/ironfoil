@@ -13,7 +13,7 @@ use std::{
     fs::File,
     io::{BufReader, Read, Seek, SeekFrom},
     os::unix::fs::MetadataExt,
-    path::PathBuf,
+    path::{Path, PathBuf},
     time::Duration,
 };
 
@@ -141,6 +141,11 @@ struct Args {
     game_backup_path: PathBuf,
 }
 
+fn has_valid_extension(path: &Path) -> bool {
+    path.extension()
+        .is_some_and(|ext| ext == "nsp" || ext == "xci")
+}
+
 fn main() -> color_eyre::Result<()> {
     env_logger::builder().format_source_path(true).init();
     color_eyre::config::HookBuilder::default()
@@ -163,15 +168,11 @@ fn main() -> color_eyre::Result<()> {
             .filter_map(|entry_result| {
                 let entry = entry_result.ok()?;
                 let path = entry.path();
-                let ext = path.extension()?;
-                (ext == "nsp").then_some(path.into_os_string().into_string().unwrap() + "\n")
+                has_valid_extension(&path)
+                    .then_some(path.into_os_string().into_string().unwrap() + "\n")
             })
             .collect()
-    } else if args
-        .game_backup_path
-        .extension()
-        .is_some_and(|ext| ext == "nsp")
-    {
+    } else if has_valid_extension(&args.game_backup_path) {
         vec![
             args.game_backup_path
                 .as_os_str()
@@ -182,7 +183,7 @@ fn main() -> color_eyre::Result<()> {
         ]
     } else {
         bail!(
-            "Given path ({}) is not a directory or an NSP file",
+            "Given path ({}) is not a directory or a valid game backup file",
             args.game_backup_path.display()
         )
     };
