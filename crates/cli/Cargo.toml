@@ -1,0 +1,14 @@
+[package]
+name = "ns-usbloader-rs"
+description = "CLI alternative to NS-USBloader. Transfer data to Awoo Installer."
+version.workspace = true
+edition.workspace = true
+repository.workspace = true
+
+[dependencies]
+clap = { version = "4", features = ["derive"] }
+env_logger = "0.11"
+log.workspace = true
+ns-usbloader-rs-core = { path = "../core" }
+color-eyre.workspace = true
+indicatif.workspace = true

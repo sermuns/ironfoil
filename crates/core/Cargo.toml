@@ -1,0 +1,12 @@
+[package]
+name = "ns-usbloader-rs-core"
+version.workspace = true
+edition.workspace = true
+repository.workspace = true
+
+[dependencies]
+log.workspace = true
+nusb = "0.2"
+thiserror = "1"
+color-eyre.workspace = true
+indicatif.workspace = true
