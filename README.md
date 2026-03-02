@@ -1,12 +1,16 @@
 # ns-usbloader-rs
 
-A proof-of-concept command line re-implementation of [NS-USBloader](https://github.com/developersu/ns-usbloader).
+A tiny command-line re-implementation of [NS-USBloader](https://github.com/developersu/ns-usbloader).
+
+![demo gif](media/demo.gif)
 
 ## Installation
 
-When I can think of a better name than `ns-usbloader-rs` and polished the code a bit more, I will probably publish this as a crate and publish binaries.
+When I can think of a better name than `ns-usbloader-rs` (#1) and have polished the code a bit more, I will publish this as a crate and start publishing binaries.
 
-As of now, only installation from source is available. You have two alternatives:
+As of now, installation from source is the only options.
+
+You have two alternatives:
 
 1. Install using cargo
 
@@ -27,12 +31,12 @@ Both of these methods places `ns-usbloader-rs` in `~/.cargo/bin/`, which normall
 
 1. On the Nintendo Switch, open Awoo Installer and select 'Install over USB'.
 
-2. On your PC, in a shell, run `ns-usbloader-rs <GAME_BACKUP_DIR>` where `<GAME_BACKUP_DIR>` is the path to a directory containing the game backups.
+2. On your PC, in a shell, run `ns-usbloader-rs <GAME_BACKUP_PATH>` where `<GAME_BACKUP_PATH>` either is the path to a directory containing the game backups or a specific game backup file.
 
    > For example
    >
    > ```sh
-   > ns-usbloader-rs ~/Documents/Backups
+   > ns-usbloader-rs ~/Documents/NS_backups/
    > ```
 
 3. On the Nintendo Switch, select which game(s) you want, then start installation.
