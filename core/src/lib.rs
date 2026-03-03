@@ -4,8 +4,7 @@ use color_eyre::{
     eyre::{bail, eyre},
 };
 use indicatif::{ProgressBar, ProgressStyle};
-use log::{debug, error, info, warn};
-use nusb::InterfaceInfo;
+use log::{debug, error, info};
 use nusb::{
     Endpoint, MaybeFuture, list_devices,
     transfer::{Buffer, Bulk, In, Out, TransferError},
@@ -17,7 +16,7 @@ use std::thread::{self, sleep};
 use std::{
     fs::File,
     io::{BufRead, BufReader, Read, Seek, SeekFrom, Write},
-    net::{IpAddr, Ipv4Addr, SocketAddrV4, TcpListener, TcpStream, UdpSocket},
+    net::{IpAddr, Ipv4Addr, TcpListener, TcpStream},
     os::unix::fs::MetadataExt,
     path::Path,
     time::Duration,
