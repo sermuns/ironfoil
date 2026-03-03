@@ -4,12 +4,16 @@ use color_eyre::{
     eyre::{bail, eyre},
 };
 use indicatif::{ProgressBar, ProgressStyle};
-use log::{debug, error, info};
+use log::{debug, error, info, warn};
+use nusb::InterfaceInfo;
 use nusb::{
     Endpoint, MaybeFuture, list_devices,
     transfer::{Buffer, Bulk, In, Out, TransferError},
 };
 use percent_encoding::{AsciiSet, CONTROLS, percent_decode_str, utf8_percent_encode};
+use std::sync::Arc;
+use std::sync::atomic::{AtomicBool, Ordering};
+use std::thread::{self, sleep};
 use std::{
     fs::File,
     io::{BufRead, BufReader, Read, Seek, SeekFrom, Write},
@@ -29,6 +33,7 @@ mod tinfoil_command_ids {
 }
 
 const USB_TIMEOUT: Duration = Duration::from_millis(500);
+const HOST_HTTP_PORT: u16 = 8080;
 
 fn read_game_paths(game_backup_path: &Path) -> color_eyre::Result<Vec<String>> {
     if !game_backup_path.exists() {
@@ -65,52 +70,17 @@ fn read_game_paths(game_backup_path: &Path) -> color_eyre::Result<Vec<String>> {
     Ok(game_paths)
 }
 
-/// Easy way to find the host IP address on the same network as the target Nintendo Switch
-fn find_host_ip(target_socket_address: SocketAddrV4) -> std::io::Result<IpAddr> {
-    let socket = UdpSocket::bind("0.0.0.0:0")?;
-    socket.connect(target_socket_address)?;
-    socket.local_addr().map(|addr| addr.ip())
-}
-
 fn urlencode(input: &str) -> String {
     const FRAGMENT_PERCENT_ENCODE_SET: &AsciiSet =
         &CONTROLS.add(b' ').add(b'"').add(b'<').add(b'>').add(b'`');
     utf8_percent_encode(input, FRAGMENT_PERCENT_ENCODE_SET).to_string()
 }
 
-// TODO: maybe keep persistent BufReader of game file contents
-pub fn perform_tinfoil_network_install(
-    game_backup_path: &Path,
-    target_ip: Ipv4Addr,
+fn serve_http(
+    game_paths: &[String],
+    host_ip: IpAddr,
+    run_http_server: Arc<AtomicBool>,
 ) -> color_eyre::Result<()> {
-    let game_paths = read_game_paths(game_backup_path)?;
-
-    const HOST_INITIATE_PORT: u16 = 2000;
-    let initiate_socket_addr = SocketAddrV4::new(target_ip, HOST_INITIATE_PORT);
-    let host_ip = find_host_ip(initiate_socket_addr)?;
-    debug!("found host ip: {}", host_ip);
-
-    const HOST_HTTP_PORT: u16 = 8080;
-    let base_url = format!("http://{}:{}/", host_ip, HOST_HTTP_PORT);
-    let urls_with_newlines = game_paths.iter().fold(String::new(), |acc, path| {
-        acc + &base_url + &urlencode(path) + "\n"
-    });
-
-    let mut initiate_stream = TcpStream::connect(initiate_socket_addr).wrap_err_with(|| format!("Target device at {target_ip} (hopefully Nintendo Switch!?) is refusing connections"))
-        .suggestion("Ensure the Nintendo Switch is awake and in Awoo Installer 'Install Over LAN or internet'")
-        .with_suggestion(|| format!(
-            "Ensure the Nintendo Switch is connected to the same network as this computer, and that the target IP ({target_ip}) seems correct.",
-        )
-        ).suggestion("Restart Awoo Installer, sometimes it enters a fucked up state..")?;
-    initiate_stream.write_all(
-        &[
-            &(u32::try_from(urls_with_newlines.len()).unwrap()).to_be_bytes(),
-            urls_with_newlines.as_bytes(),
-        ]
-        .concat(),
-    )?;
-    debug!("Sent initiating data {}", &urls_with_newlines);
-
     let listener = TcpListener::bind((host_ip, HOST_HTTP_PORT))
         .wrap_err_with(|| {
             format!(
@@ -121,14 +91,24 @@ pub fn perform_tinfoil_network_install(
         .suggestion(
             "Ensure no other process is using the same port, and that the host IP seems correct.",
         )?;
+    listener.set_nonblocking(true)?;
+    info!("sucesfulyl started http server");
 
-    for stream in listener.incoming() {
-        let mut stream = stream.unwrap();
+    while run_http_server.load(Ordering::Relaxed) {
+        let (mut stream, _addr) = match listener.accept() {
+            Ok(tuple) => tuple,
+            Err(e) if e.kind() == std::io::ErrorKind::WouldBlock => {
+                thread::sleep(Duration::from_millis(100));
+                continue;
+            }
+            Err(e) => {
+                error!("error accepting incoming HTTP connection: {:?}", e);
+                continue;
+            }
+        };
         let buf_reader = BufReader::new(&stream);
         let mut lines = buf_reader.lines().map(|result| result.unwrap());
         let start_line = lines.next().unwrap();
-        info!("new stream");
-        debug!("start_line: {}", &start_line);
 
         let mut parts = start_line.split(' ');
         let method = parts.next().unwrap();
@@ -139,6 +119,7 @@ pub fn perform_tinfoil_network_install(
             deny_request(&mut stream);
             continue;
         };
+        println!("Requested '{}'", requested_game_path);
         if parts.next().is_none_or(|part| part != "HTTP/1.1") {
             error!("invalid HTTP request start line: {}", start_line);
             deny_request(&mut stream);
@@ -162,13 +143,13 @@ pub fn perform_tinfoil_network_install(
 
         match method {
             "GET" => {
+                debug!("got GET");
                 let range_line = lines.find(|line| line.starts_with("Range: ")).unwrap();
                 const RANGE_PREFIX: usize = "Range: bytes=".len();
                 let mut range_parts = range_line[RANGE_PREFIX..].split('-');
                 let range_start: u64 = range_parts.next().unwrap().parse().unwrap();
                 let range_end: u64 = range_parts.next().unwrap().parse().unwrap();
                 let range_length = range_end - range_start + 1;
-                info!("range start: {range_start}, range_end: {range_end}");
 
                 let mut file = File::open(requested_game_path.as_ref()).unwrap();
                 file.seek(SeekFrom::Start(range_start)).unwrap();
@@ -184,7 +165,6 @@ pub fn perform_tinfoil_network_install(
                     &buf,
                 ].concat()
                 );
-                debug!("done responding to GET");
             }
             "HEAD" => {
                 debug!("got HEAD");
@@ -201,6 +181,68 @@ pub fn perform_tinfoil_network_install(
             }
         }
     }
+    info!("CLOSING http server");
+    Ok(())
+}
+
+// TODO: maybe keep persistent BufReader of game file contents
+pub fn perform_tinfoil_network_install(
+    game_backup_path: &Path,
+    target_ip: Ipv4Addr,
+) -> color_eyre::Result<()> {
+    let game_paths = read_game_paths(game_backup_path)?;
+    println!("Performing network install to {}", target_ip);
+
+    let mut keepalive_stream = TcpStream::connect((target_ip, 2000)).wrap_err_with(|| format!("Target device at {target_ip} (hopefully Nintendo Switch!?) is refusing connections"))
+        .suggestion("Ensure the Nintendo Switch is awake and in Awoo Installer 'Install Over LAN or internet'")
+        .with_suggestion(|| format!(
+            "Ensure the Nintendo Switch is connected to the same network as this computer, and that the target IP ({target_ip}) seems correct.",
+        )
+        ).suggestion("Restart Awoo Installer, sometimes it enters a fucked up state..")?;
+    keepalive_stream.set_read_timeout(Some(Duration::from_secs(1)))?;
+
+    let host_ip = keepalive_stream.local_addr().map(|addr| addr.ip())?;
+    debug!("found host ip: {}", host_ip);
+    let base_url = format!("http://{}:{}/", host_ip, HOST_HTTP_PORT);
+    let urls_with_newlines = game_paths.iter().fold(String::new(), |acc, path| {
+        acc + &base_url + &urlencode(path) + "\n"
+    });
+
+    let run_http_server = Arc::new(AtomicBool::new(true));
+    let run_http_server_thread = Arc::clone(&run_http_server);
+    let http_thread =
+        thread::spawn(move || serve_http(&game_paths, host_ip, run_http_server_thread));
+    debug!("Spawned HTTP thread");
+
+    keepalive_stream.write_all(
+        &[
+            &(u32::try_from(urls_with_newlines.len()).unwrap()).to_be_bytes(),
+            urls_with_newlines.as_bytes(),
+        ]
+        .concat(),
+    )?;
+
+    debug!("Sent initiating data {}", &urls_with_newlines);
+
+    let mut keepalive_buf = Vec::new();
+    loop {
+        info!("polling keepalive");
+        match keepalive_stream.read_to_end(&mut keepalive_buf) {
+            Ok(_) => {
+                debug!("keepalive stream closed by peer");
+                break;
+            }
+            Err(e) if e.kind() == std::io::ErrorKind::WouldBlock => {
+                sleep(Duration::from_millis(600));
+            }
+            Err(e) => {
+                error!("error reading from keepalive stream: {:?}", e);
+                break;
+            }
+        }
+    }
+    run_http_server.store(false, Ordering::Relaxed);
+    http_thread.join().unwrap()?;
 
     Ok(())
 }
