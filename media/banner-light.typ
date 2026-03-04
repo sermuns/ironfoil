@@ -3,11 +3,11 @@
 #set page(
   width: auto,
   height: auto,
-  margin: (x: .5em, y: .1em),
-  fill: none,
+  margin: 50pt,
+  fill: white,
 )
 
 #set align(center + horizon)
 
-#logo(foreground-light)
+#image("logo-light.svg")
 

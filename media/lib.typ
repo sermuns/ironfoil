@@ -12,10 +12,15 @@
     spacing: .25em,
     image(
       bytes(
-        read("logo.svg").replace(
-          "#000000",
-          color.to-hex(),
-        ),
+        read("logo.svg")
+          .replace(
+            "#000000",
+            color.to-hex(),
+          )
+          .replace(
+            "#000",
+            color.to-hex(),
+          ),
       ),
       height: 1.1em,
     ),

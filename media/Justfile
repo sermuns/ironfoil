@@ -1,0 +1,4 @@
+compile:
+	typst c banner-light.typ -f svg
+	typst c banner-dark.typ -f svg
+	typst c repo_card.typ -f png

@@ -9,4 +9,4 @@
 
 #set align(center + horizon)
 
-#logo(foreground-dark)
+#image("logo-dark.svg", height: 200pt)
