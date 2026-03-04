@@ -13,6 +13,8 @@ jobs:
   publish-github:
     name: Publish for ${{ matrix.build.OS }} (${{ matrix.build.TARGET }})
     runs-on: ${{ matrix.build.OS }}
+    permissions:
+      contents: write # for publishing release?
     strategy:
       fail-fast: false
       matrix:
@@ -27,56 +29,56 @@ jobs:
               TOOLCHAIN: stable,
               TARGET: x86_64-unknown-linux-musl,
             }
-          - {
-              OS: ubuntu-22.04,
-              TOOLCHAIN: stable,
-              TARGET: aarch64-unknown-linux-gnu,
-            }
-          - {
-              OS: ubuntu-22.04,
-              TOOLCHAIN: stable,
-              TARGET: riscv64gc-unknown-linux-gnu,
-            }
-          - {
-              OS: ubuntu-22.04,
-              TOOLCHAIN: stable,
-              TARGET: i686-unknown-linux-gnu,
-            }
+          # - {
+          #     OS: ubuntu-22.04,
+          #     TOOLCHAIN: stable,
+          #     TARGET: aarch64-unknown-linux-gnu,
+          #   }
+          # - {
+          #     OS: ubuntu-22.04,
+          #     TOOLCHAIN: stable,
+          #     TARGET: riscv64gc-unknown-linux-gnu,
+          #   }
+          # - {
+          #     OS: ubuntu-22.04,
+          #     TOOLCHAIN: stable,
+          #     TARGET: i686-unknown-linux-gnu,
+          #   }
           - {
               OS: ubuntu-22.04,
               TOOLCHAIN: stable,
               TARGET: i686-unknown-linux-musl,
             }
-          - {
-              OS: ubuntu-22.04,
-              TOOLCHAIN: stable,
-              TARGET: aarch64-unknown-linux-musl,
-            }
-          - {
-              OS: ubuntu-22.04,
-              TOOLCHAIN: stable,
-              TARGET: armv5te-unknown-linux-gnueabi,
-            }
-          - {
-              OS: ubuntu-22.04,
-              TOOLCHAIN: stable,
-              TARGET: armv7-unknown-linux-gnueabihf,
-            }
-          - {
-              OS: ubuntu-22.04,
-              TOOLCHAIN: stable,
-              TARGET: arm-unknown-linux-gnueabi,
-            }
-          - {
-              OS: ubuntu-22.04,
-              TOOLCHAIN: stable,
-              TARGET: arm-unknown-linux-gnueabihf,
-            }
-          - {
-              OS: ubuntu-22.04,
-              TOOLCHAIN: stable,
-              TARGET: powerpc64le-unknown-linux-gnu,
-            }
+          # - {
+          #     OS: ubuntu-22.04,
+          #     TOOLCHAIN: stable,
+          #     TARGET: aarch64-unknown-linux-musl,
+          #   }
+          # - {
+          #     OS: ubuntu-22.04,
+          #     TOOLCHAIN: stable,
+          #     TARGET: armv5te-unknown-linux-gnueabi,
+          #   }
+          # - {
+          #     OS: ubuntu-22.04,
+          #     TOOLCHAIN: stable,
+          #     TARGET: armv7-unknown-linux-gnueabihf,
+          #   }
+          # - {
+          #     OS: ubuntu-22.04,
+          #     TOOLCHAIN: stable,
+          #     TARGET: arm-unknown-linux-gnueabi,
+          #   }
+          # - {
+          #     OS: ubuntu-22.04,
+          #     TOOLCHAIN: stable,
+          #     TARGET: arm-unknown-linux-gnueabihf,
+          #   }
+          # - {
+          #     OS: ubuntu-22.04,
+          #     TOOLCHAIN: stable,
+          #     TARGET: powerpc64le-unknown-linux-gnu,
+          #   }
           - {
               OS: windows-2022,
               TOOLCHAIN: stable,
