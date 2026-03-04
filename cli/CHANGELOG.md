@@ -10,3 +10,4 @@
 
 - rename project from ns-usbloader-rs to ironfoil by @sermuns in [52b5bcc](https://github.com/sermuns/ironfoil/commit/52b5bccfdc22c8ee67c245d481c2d5082bfea28f)
 - fixes to crate metadata for publishing by @sermuns in [7cc31df](https://github.com/sermuns/ironfoil/commit/7cc31df5eaddc204e5b43e5e956da5ae6fc4b49d)
+- add release config by @sermuns in [19d6f9c](https://github.com/sermuns/ironfoil/commit/19d6f9c7039dbc1c7aacc93fc818aa18c0ac28d9)
