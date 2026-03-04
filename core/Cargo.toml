@@ -13,3 +13,4 @@ nusb = "0.2"
 percent-encoding = "2.3"
 color-eyre.workspace = true
 indicatif.workspace = true
+walkdir = "2"

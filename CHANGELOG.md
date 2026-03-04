@@ -1,14 +1,31 @@
 # Changelog
 
-## [0.1.3](https://github.com/sermuns/ironfoil/compare/v0.1.2..0.1.3) - 2026-03-04
+## [0.1.4](https://github.com/sermuns/ironfoil/compare/v0.1.3..0.1.4) - 2026-03-04
+
+### 🚀 Features
+
+- add recurse flag by Samuel Åkesson in [c0e4e3b](https://github.com/sermuns/ironfoil/commit/c0e4e3b5c021d027ecf0f0e3f2886ad78fb1e82a)
+
+### 📚 Documentation
+
+- update install instructions by @sermuns in [2b65ec2](https://github.com/sermuns/ironfoil/commit/2b65ec266f53817e25e7be387914d499db0b8fc0)
+
+### ⚙️ Miscellaneous Tasks
+
+- simplify release naming by @sermuns in [9b12e01](https://github.com/sermuns/ironfoil/commit/9b12e018c535243f333d937b14e060826df1f9e8)
+- add logo, media by @sermuns in [dbf2693](https://github.com/sermuns/ironfoil/commit/dbf269394245242a3f1357034b953bd01a00567c)
+- add logo to README by @sermuns in [bdf2305](https://github.com/sermuns/ironfoil/commit/bdf2305a24c515578233dc7ef739f67846e75ff8)
+- update logo, hardcode text paths by @sermuns in [d96dcd0](https://github.com/sermuns/ironfoil/commit/d96dcd0c7a2dc5741d0f09eb72f9818004b075bc)
+- make banner transparent by @sermuns in [d888462](https://github.com/sermuns/ironfoil/commit/d8884621eec61227fa1aabc2c4b87ce286548365)
+## [v0.1.3](https://github.com/sermuns/ironfoil/compare/v0.1.2..v0.1.3) - 2026-03-04
 
 ### ⚙️ Miscellaneous Tasks
 
 - revamp how releasing is done by @sermuns in [b56dae8](https://github.com/sermuns/ironfoil/commit/b56dae8102496dad6068069c732f72e1bf00ae93)
 - add Dockerfile, but remove workflow for now by @sermuns in [87da659](https://github.com/sermuns/ironfoil/commit/87da659dee16a30b0be211a6b44b96dde620cc1e)
 - use correct token by @sermuns in [4887c2b](https://github.com/sermuns/ironfoil/commit/4887c2b34b29280531544351b2f823f438d77b54)
-- add write permission to workflow by Samuel Åkesson in [2047fa8](https://github.com/sermuns/ironfoil/commit/2047fa8d4def2f570d7166e1f558aa5961f9e41a)
-- release v0.1.3 by Samuel Åkesson in [a497907](https://github.com/sermuns/ironfoil/commit/a49790791da6ddaaa225fdbdb737a4319f378484)
+- add write permission to workflow by @sermuns in [2047fa8](https://github.com/sermuns/ironfoil/commit/2047fa8d4def2f570d7166e1f558aa5961f9e41a)
+- release v0.1.3 by @sermuns in [3765e2a](https://github.com/sermuns/ironfoil/commit/3765e2a01566b1ca35e95145fff66664e22ac141)
 ## [v0.1.2](https://github.com/sermuns/ironfoil/compare/ironfoil-v0.1.1..v0.1.2) - 2026-03-04
 
 ### ⚙️ Miscellaneous Tasks

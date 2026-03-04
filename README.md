@@ -51,7 +51,7 @@ Both of these methods places `ironfoil` in `~/.cargo/bin/`, which normally shoul
 ```present cargo run -- -h
 Transfer to Awoo installer from the command-line
 
-Usage: ironfoil <GAME_BACKUP_PATH> <COMMAND>
+Usage: ironfoil [OPTIONS] <GAME_BACKUP_PATH> <COMMAND>
 
 Commands:
   usb      Transfer over USB
@@ -62,6 +62,7 @@ Arguments:
   <GAME_BACKUP_PATH>  Path to a game backup file or directory containing game backup files
 
 Options:
+  -r, --recurse  Whether to recursively look for files. Only applicable when pointing to a directory
   -h, --help     Print help
   -V, --version  Print version
 ```

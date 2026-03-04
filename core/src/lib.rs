@@ -20,6 +20,7 @@ use std::{
     path::Path,
     time::Duration,
 };
+use walkdir::WalkDir;
 
 mod tinfoil_command_types {
     pub const RESPONSE: [u8; 4] = 0u32.to_le_bytes();
@@ -33,14 +34,15 @@ mod tinfoil_command_ids {
 const USB_TIMEOUT: Duration = Duration::from_millis(500);
 const HOST_HTTP_PORT: u16 = 8080;
 
-fn read_game_paths(game_backup_path: &Path) -> color_eyre::Result<Vec<String>> {
+fn read_game_paths(game_backup_path: &Path, recurse: bool) -> color_eyre::Result<Vec<String>> {
     if !game_backup_path.exists() {
         bail!("Given path ({}) does not exist", game_backup_path.display())
     }
 
     let game_paths: Vec<_> = if game_backup_path.is_dir() {
-        game_backup_path
-            .read_dir()?
+        WalkDir::new(game_backup_path)
+            .max_depth(if recurse { usize::MAX } else { 1 })
+            .into_iter()
             .filter_map(|entry_result| {
                 let entry = entry_result.ok()?;
                 let path = entry.path();
@@ -50,6 +52,9 @@ fn read_game_paths(game_backup_path: &Path) -> color_eyre::Result<Vec<String>> {
     } else if is_game_backup(game_backup_path)
         && let Some(path_str) = game_backup_path.to_str()
     {
+        if recurse {
+            eprintln!("Warning: recurse has no effect when given path is a file, ignoring...");
+        }
         vec![path_str.to_string()]
     } else {
         bail!(
@@ -187,8 +192,9 @@ fn serve_http(
 pub fn perform_tinfoil_network_install(
     game_backup_path: &Path,
     target_ip: Ipv4Addr,
+    recurse: bool,
 ) -> color_eyre::Result<()> {
-    let game_paths = read_game_paths(game_backup_path)?;
+    let game_paths = read_game_paths(game_backup_path, recurse)?;
     println!("Performing network install to {}", target_ip);
 
     let mut keepalive_stream = TcpStream::connect((target_ip, 2000)).wrap_err_with(|| format!("Target device at {target_ip} (hopefully Nintendo Switch!?) is refusing connections"))
@@ -255,8 +261,8 @@ fn respond_to_request(stream: &mut TcpStream, buf: impl AsRef<[u8]>) {
     }
 }
 
-pub fn perform_tinfoil_usb_install(game_backup_path: &Path) -> color_eyre::Result<()> {
-    let game_paths = read_game_paths(game_backup_path)?;
+pub fn perform_tinfoil_usb_install(game_backup_path: &Path, recurse: bool) -> color_eyre::Result<()> {
+    let game_paths = read_game_paths(game_backup_path, recurse)?;
     let paths_with_newlines_string_length: usize =
         game_paths.iter().map(|path| path.len() + 1).sum();
 
