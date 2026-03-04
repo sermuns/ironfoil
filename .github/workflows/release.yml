@@ -155,7 +155,7 @@ jobs:
           file_glob: true
           overwrite: true
           tag: ${{ github.ref }}
-          release_name: "Release v${{ env.RELEASE_VERSION }}"
+          release_name: v${{ env.RELEASE_VERSION }}
           body: ${{ steps.git-cliff.outputs.content }}
           repo_token: ${{ secrets.GITHUB_TOKEN }}
 
