@@ -7,3 +7,7 @@ release:
 	git add CHANGELOG.md
 	git commit --amend --no-edit
 	git tag v$VERSION -f
+
+push:
+	git push
+	git push --tags
