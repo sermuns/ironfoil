@@ -1,0 +1,25 @@
+[package]
+name = "ironfoil-gui"
+description = "GUI for ironfoil"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[dependencies]
+color-eyre.workspace = true
+eframe = { version = "0.33", default-features = false, features = [
+    "default_fonts",
+    "glow",
+    "persistence",
+    "wayland",
+    "x11",
+] }
+egui = "0.33"
+env_logger.workspace = true
+ironfoil-core = { path = "../core", version = "0.1.6" }
+log.workspace = true
+serde = { version = "1", features = ["derive"] }
+
+[build-dependencies]
+vergen-gitcl  = "9.1.0"
