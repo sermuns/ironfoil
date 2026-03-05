@@ -2,6 +2,14 @@ use color_eyre::eyre::bail;
 use std::path::Path;
 use walkdir::WalkDir;
 
+pub const GAME_BACKUP_EXTENSIONS: [&str; 3] = ["nsp", "xci", "nsz"];
+
+pub(crate) fn is_game_backup(path: &Path) -> bool {
+    path.extension()
+        .and_then(|ext| ext.to_str())
+        .is_some_and(|ext| GAME_BACKUP_EXTENSIONS.contains(&ext))
+}
+
 pub(crate) fn read_game_paths(
     game_backup_path: &Path,
     recurse: bool,
@@ -42,9 +50,4 @@ pub(crate) fn read_game_paths(
     }
 
     Ok(game_paths)
-}
-
-pub(crate) fn is_game_backup(path: &Path) -> bool {
-    path.extension()
-        .is_some_and(|ext| ext == "nsp" || ext == "xci" || ext == "nsz")
 }
