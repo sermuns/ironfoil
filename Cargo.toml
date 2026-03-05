@@ -3,6 +3,7 @@ resolver = "3"
 members = [
   "cli",
   "core",
+  "gui",
 ]
 
 [workspace.package]
@@ -15,6 +16,7 @@ repository = "https://github.com/sermuns/ironfoil"
 log = "0.4"
 color-eyre = { version = "0.6", default-features = false, features = ["track-caller"] }
 indicatif = "0.18"
+env_logger = "0.11"
 
 [profile.release]
 opt-level = 3

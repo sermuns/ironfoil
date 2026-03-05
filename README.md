@@ -48,7 +48,7 @@ Both of these methods places `ironfoil` in `~/.cargo/bin/`, which normally shoul
 
 ## Usage
 
-```present cargo run -- -h
+```present cargo run --bin ironfoil -- -h
 Transfer to Awoo installer from the command-line
 
 Usage: ironfoil <COMMAND>
