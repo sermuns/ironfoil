@@ -1,7 +1,12 @@
+use std::path::PathBuf;
+
 use egui::{
-    Button, RichText,
+    Align2, Button, RichText,
     Theme::{Dark, Light},
 };
+use egui_toast::{Toast, ToastKind, Toasts};
+use ironfoil_core::{GAME_BACKUP_EXTENSIONS, perform_tinfoil_usb_install};
+use log::error;
 use serde::{Deserialize, Serialize};
 use strum::{EnumIter, IntoEnumIterator};
 
@@ -14,43 +19,68 @@ pub struct App {
 #[derive(Serialize, Deserialize, Debug, EnumIter, PartialEq)]
 enum Tab {
     Home,
-    Usb,
+    Usb { recurse: bool },
     Network,
     Rcm,
+}
+
+fn try_install(path: Option<PathBuf>, recurse: bool, toasts: &mut Toasts) {
+    if let Some(path) = path
+        && let Err(e) = perform_tinfoil_usb_install(&path, recurse)
+    {
+        error!("{}", e);
+        toasts.add(Toast {
+            kind: ToastKind::Error,
+            text: e.to_string().into(),
+            ..Default::default()
+        });
+    }
 }
 
 impl Tab {
     fn as_str(&self) -> &'static str {
         match self {
             Tab::Home => "Home",
-            Tab::Usb => "USB",
+            Tab::Usb { .. } => "USB",
             Tab::Network => "Network",
             Tab::Rcm => "RCM",
         }
     }
 
-    fn show(&self, ui: &mut egui::Ui, theme: &egui::Theme) -> egui::Response {
+    fn show(
+        &mut self,
+        ui: &mut egui::Ui,
+        theme: &egui::Theme,
+        toasts: &mut Toasts,
+    ) -> egui::Response {
         match self {
             Tab::Home => {
-                ui.label("Select one of the tabs on the left to get started.");
+                ui.label("Select one of the tabs on the left to get started!");
                 match theme {
                     Dark => ui.image(egui::include_image!("../../media/banner-dark.svg")),
                     Light => ui.image(egui::include_image!("../../media/banner-light.svg")),
                 }
             }
-            Tab::Usb => {
+            Tab::Usb { recurse } => {
                 ui.label("Install through USB");
-                if ui.button("Pick file").clicked()
-                    && let Some(path) = rfd::FileDialog::new()
-                        .add_filter("*", &ironfoil_core::GAME_BACKUP_EXTENSIONS)
-                        .pick_file()
-                {
-                    eprintln!("picked file: {:?}", path);
-                } else if ui.button("Pick folder").clicked()
-                    && let Some(path) = rfd::FileDialog::new().pick_folder()
-                {
-                    eprintln!("picked folder: {:?}", path);
+
+                if ui.button("Install from file").clicked() {
+                    try_install(
+                        rfd::FileDialog::new()
+                            .add_filter("*", &GAME_BACKUP_EXTENSIONS)
+                            .pick_file(),
+                        *recurse,
+                        toasts,
+                    );
                 }
+
+                ui.horizontal(|ui| {
+                    if ui.button("Install from folder").clicked() {
+                        try_install(rfd::FileDialog::new().pick_folder(), *recurse, toasts);
+                    }
+                    ui.checkbox(recurse, "Recurse?");
+                });
+
                 ui.label("he")
             }
             Tab::Network => ui.label("Network tab content goes here."),
@@ -108,6 +138,10 @@ impl eframe::App for App {
             });
 
         egui::CentralPanel::default().show(ctx, |ui| {
+            let mut toasts = Toasts::new()
+                .anchor(Align2::RIGHT_BOTTOM, (-16., -16.))
+                .direction(egui::Direction::BottomUp);
+
             ui.horizontal(|ui| {
                 if !matches!(self.tab, Tab::Home) {
                     ui.heading(self.tab.as_str());
@@ -117,7 +151,7 @@ impl eframe::App for App {
             });
             ui.separator();
 
-            self.tab.show(ui, &ctx.theme());
+            self.tab.show(ui, &ctx.theme(), &mut toasts);
 
             ui.with_layout(egui::Layout::bottom_up(egui::Align::RIGHT), |ui| {
                 ui.horizontal(|ui| {
@@ -129,6 +163,7 @@ impl eframe::App for App {
                 });
                 ui.separator();
             });
+            toasts.show(ctx);
         });
     }
 
