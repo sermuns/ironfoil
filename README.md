@@ -14,7 +14,7 @@ A tiny command-line tool to transfer to [Awoo installer](https://github.com/Hunt
 
 Alternatives:
 
-1. Manually download [latest release](https://github.com/sermuns/meread/releases/latest) and extract the tool to a location that is in your `$PATH`.
+1. Manually download [latest release](https://github.com/sermuns/ironfoil/releases/latest) and extract the tool to a location that is in your `$PATH`.
 
 2. Use [`cargo-binstall`](https://github.com/cargo-bins/cargo-binstall):
    ```sh
