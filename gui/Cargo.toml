@@ -17,6 +17,7 @@ eframe = { version = "0.33", default-features = false, features = [
 ] }
 egui = "0.33"
 egui_extras = { version = "0.33", features = ["svg"] }
+egui-toast = "0.19"
 env_logger.workspace = true
 ironfoil-core = { path = "../core", version = "0.1.6" }
 log.workspace = true
