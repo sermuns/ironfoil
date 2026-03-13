@@ -6,7 +6,7 @@ use egui::{
 };
 use egui_toast::{Toast, ToastKind, Toasts};
 use ironfoil_core::{GAME_BACKUP_EXTENSIONS, perform_tinfoil_usb_install};
-use log::error;
+use log::{error, info};
 use serde::{Deserialize, Serialize};
 use strum::{EnumIter, IntoEnumIterator};
 
@@ -62,8 +62,7 @@ impl Tab {
                 }
             }
             Tab::Usb { recurse } => {
-                ui.label("Install through USB");
-
+                ui.add_space(4.);
                 if ui.button("Install from file").clicked() {
                     try_install(
                         rfd::FileDialog::new()
@@ -101,10 +100,10 @@ impl App {
 
         if let Some(storage) = cc.storage {
             let stored = eframe::get_value(storage, eframe::APP_KEY).unwrap_or_default();
-            eprintln!("read from stored! {:?}", &stored);
+            info!("read from stored! {:?}", &stored);
             stored
         } else {
-            eprintln!("no stored");
+            info!("no stored");
             Default::default()
         }
     }
