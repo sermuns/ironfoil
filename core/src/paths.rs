@@ -1,4 +1,4 @@
-use color_eyre::eyre::{OptionExt, bail};
+use color_eyre::eyre::bail;
 use std::{
     path::Path,
     sync::atomic::{AtomicBool, Ordering},

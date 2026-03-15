@@ -7,6 +7,7 @@ use nusb::{
 };
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, mpsc};
+use std::thread::sleep;
 use std::{
     fs::File,
     io::{BufReader, Read, Seek, SeekFrom},
@@ -224,24 +225,39 @@ fn write_usb(
     ep_out: &mut Endpoint<Bulk, Out>,
     message: impl Into<Vec<u8>>,
 ) -> color_eyre::Result<()> {
-    let buf = message.into();
-    ep_out
-        .transfer_blocking(buf.into(), USB_TIMEOUT)
-        .status
-        .map_err(|e| match e {
-            TransferError::Cancelled => {
-                eyre!(
-                    [
-                        "Nintendo Switch was discovered, but it is not accepting transfers.",
-                        "Ensure Awoo Installer is open, and in the menu 'Install Over USB'."
-                    ]
-                    .join("\n")
-                )
-            }
-            TransferError::Disconnected => eyre!("USB has disconnected"),
-            TransferError::Fault | TransferError::Stall | TransferError::InvalidArgument => {
-                eyre!("Malformed data during transfer. {:?}", e)
-            }
-            TransferError::Unknown(i) => eyre!("Unknown error {}", i),
-        })
+    let buf_vec = message.into();
+    for _ in 0..50 {
+        match ep_out
+            // FIXME: shitty clone per retry iteration
+            .transfer_blocking(buf_vec.clone().into(), USB_TIMEOUT)
+            .status
+        {
+            Ok(_) => return Ok(()),
+            Err(e) => match e {
+                TransferError::Cancelled => {
+                    const RETRY_DURATION: Duration = Duration::from_millis(500);
+                    eprintln!(
+                        "Transfer was cancelled, retrying in {:.1} seconds...",
+                        RETRY_DURATION.as_secs_f32()
+                    );
+                    if let Err(e) = ep_out.clear_halt().wait() {
+                        error!("failed to clear halt on endpoint after cancelled transfer: {e:?}",);
+                    }
+                    sleep(RETRY_DURATION);
+                }
+                TransferError::Disconnected => bail!("USB has disconnected"),
+                TransferError::Fault | TransferError::Stall | TransferError::InvalidArgument => {
+                    bail!("Malformed data during transfer. {:?}", e)
+                }
+                TransferError::Unknown(i) => bail!("Unknown error {}", i),
+            },
+        }
+    }
+    bail!(
+        [
+            "Nintendo Switch was discovered, but it is not accepting transfers.",
+            "Ensure Awoo Installer is open, and in the menu 'Install Over USB'."
+        ]
+        .join("\n")
+    )
 }

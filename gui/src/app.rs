@@ -136,12 +136,6 @@ impl Tab {
                     }
                     let progress: f32 = ongoing_installation.last_progress as f32
                         / ongoing_installation.last_progress_len as f32;
-                    info!(
-                        "progress: {}/{} ({:.2}%)",
-                        ongoing_installation.last_progress,
-                        ongoing_installation.last_progress_len,
-                        progress * 100.
-                    );
                     ui.horizontal(|ui| {
                         ui.add(ProgressBar::new(progress));
                     });
