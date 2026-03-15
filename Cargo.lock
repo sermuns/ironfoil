@@ -1472,6 +1472,7 @@ dependencies = [
  "clap",
  "color-eyre",
  "env_logger",
+ "indicatif",
  "ironfoil-core",
 ]
 
@@ -1480,7 +1481,6 @@ name = "ironfoil-core"
 version = "0.1.6"
 dependencies = [
  "color-eyre",
- "indicatif",
  "log",
  "nusb",
  "percent-encoding",

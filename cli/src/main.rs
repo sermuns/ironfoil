@@ -1,8 +1,9 @@
 use clap::{Args, Parser, Subcommand};
+use indicatif::{ProgressBar, ProgressStyle};
 use ironfoil_core::{
     perform_tinfoil_network_install, perform_tinfoil_usb_install, send_rcm_payload,
 };
-use std::{net::Ipv4Addr, path::PathBuf};
+use std::{net::Ipv4Addr, path::PathBuf, sync::mpsc};
 
 #[derive(Debug, Parser)]
 #[command(version, about, long_about = None)]
@@ -48,6 +49,12 @@ enum TransferType {
     },
 }
 
+fn create_progress_bar() -> ProgressBar {
+    ProgressBar::no_length().with_style(
+        ProgressStyle::with_template("ETA: {eta} ({binary_bytes_per_sec}) {wide_bar} {binary_bytes} of {binary_total_bytes} sent").unwrap(),
+    )
+}
+
 fn main() -> color_eyre::Result<()> {
     env_logger::builder().format_source_path(true).init();
     color_eyre::config::HookBuilder::default()
@@ -57,18 +64,67 @@ fn main() -> color_eyre::Result<()> {
 
     let args = Cli::parse();
 
+    // TODO: deduplicate, generalise Usb and Network transfer code here...
+    // maybe create a generic functin that accepts any transfer function?
     match args.transfer_type {
         TransferType::Usb { transfer_args } => {
-            perform_tinfoil_usb_install(&transfer_args.game_backup_path, transfer_args.recurse)
+            let pb = create_progress_bar();
+            let (progress_len_tx, progress_len_rx) = mpsc::channel::<u64>();
+            let (progress_tx, progress_rx) = mpsc::channel::<u64>();
+
+            let usb_install_thread = std::thread::spawn(move || {
+                perform_tinfoil_usb_install(
+                    &transfer_args.game_backup_path,
+                    transfer_args.recurse,
+                    progress_len_tx,
+                    progress_tx,
+                )
+            });
+
+            while !usb_install_thread.is_finished() {
+                if let Ok(total_len) = progress_len_rx.try_recv() {
+                    pb.set_length(total_len);
+                }
+
+                if let Ok(progress) = progress_rx.try_recv() {
+                    pb.set_position(progress);
+                }
+            }
+            usb_install_thread
+                .join()
+                .expect("joining usb install thread")?;
         }
         TransferType::Network {
             transfer_args,
             target_ip,
-        } => perform_tinfoil_network_install(
-            &transfer_args.game_backup_path,
-            transfer_args.recurse,
-            target_ip,
-        ),
-        TransferType::Rcm { payload_path } => send_rcm_payload(&payload_path),
+        } => {
+            let pb = create_progress_bar();
+            let (progress_len_tx, progress_len_rx) = mpsc::channel::<u64>();
+            let (progress_tx, progress_rx) = mpsc::channel::<u64>();
+
+            let network_install_thread = std::thread::spawn(move || {
+                perform_tinfoil_network_install(
+                    &transfer_args.game_backup_path,
+                    transfer_args.recurse,
+                    target_ip,
+                    progress_len_tx,
+                    progress_tx,
+                )
+            });
+
+            while !network_install_thread.is_finished() {
+                if let Ok(total_len) = progress_len_rx.try_recv() {
+                    pb.set_length(total_len);
+                }
+                if let Ok(progress) = progress_rx.try_recv() {
+                    pb.set_position(progress);
+                }
+            }
+            network_install_thread
+                .join()
+                .expect("joining usb install thread")?;
+        }
+        TransferType::Rcm { payload_path } => send_rcm_payload(&payload_path)?,
     }
+    Ok(())
 }

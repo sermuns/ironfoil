@@ -2,8 +2,8 @@ use color_eyre::Section;
 use color_eyre::eyre::Context;
 use log::{debug, error, info};
 use percent_encoding::{AsciiSet, CONTROLS, percent_decode_str, utf8_percent_encode};
-use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::{Arc, mpsc};
 use std::thread::{self, sleep};
 use std::{
     fs::File,
@@ -29,6 +29,8 @@ fn serve_http(
     game_paths: &[String],
     host_ip: IpAddr,
     run_http_server: Arc<AtomicBool>,
+    progress_len_tx: mpsc::Sender<u64>,
+    progress_tx: mpsc::Sender<u64>,
 ) -> color_eyre::Result<()> {
     let listener = TcpListener::bind((host_ip, HOST_HTTP_PORT))
         .wrap_err_with(|| {
@@ -90,6 +92,8 @@ fn serve_http(
             .unwrap()
             .len();
 
+        progress_len_tx.send(game_size)?;
+
         match method {
             "GET" => {
                 debug!("got GET");
@@ -99,6 +103,8 @@ fn serve_http(
                 let range_start: u64 = range_parts.next().unwrap().parse().unwrap();
                 let range_end: u64 = range_parts.next().unwrap().parse().unwrap();
                 let range_length = range_end - range_start + 1;
+
+                progress_tx.send(range_start)?;
 
                 let mut file = File::open(requested_game_path.as_ref()).unwrap();
                 file.seek(SeekFrom::Start(range_start)).unwrap();
@@ -139,6 +145,8 @@ pub fn perform_tinfoil_network_install(
     game_backup_path: &Path,
     recurse: bool,
     target_ip: Ipv4Addr,
+    progress_len_tx: mpsc::Sender<u64>,
+    progress_tx: mpsc::Sender<u64>,
 ) -> color_eyre::Result<()> {
     let game_paths = read_game_paths(game_backup_path, recurse)?;
     println!("Performing network install to {}", target_ip);
@@ -160,8 +168,15 @@ pub fn perform_tinfoil_network_install(
 
     let run_http_server = Arc::new(AtomicBool::new(true));
     let run_http_server_thread = Arc::clone(&run_http_server);
-    let http_thread =
-        thread::spawn(move || serve_http(&game_paths, host_ip, run_http_server_thread));
+    let http_thread = thread::spawn(move || {
+        serve_http(
+            &game_paths,
+            host_ip,
+            run_http_server_thread,
+            progress_len_tx,
+            progress_tx,
+        )
+    });
     debug!("Spawned HTTP thread");
 
     keepalive_stream.write_all(
@@ -192,9 +207,7 @@ pub fn perform_tinfoil_network_install(
         }
     }
     run_http_server.store(false, Ordering::Relaxed);
-    http_thread.join().unwrap()?;
-
-    Ok(())
+    http_thread.join().expect("joining http server thread")
 }
 
 fn deny_request(stream: &mut TcpStream) {

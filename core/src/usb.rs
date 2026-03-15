@@ -3,12 +3,12 @@ use color_eyre::{
     Section,
     eyre::{bail, eyre},
 };
-use indicatif::{ProgressBar, ProgressStyle};
 use log::{debug, error, info};
 use nusb::{
     Endpoint, MaybeFuture, list_devices,
     transfer::{Buffer, Bulk, In, Out, TransferError},
 };
+use std::sync::mpsc;
 use std::{
     fs::File,
     io::{BufReader, Read, Seek, SeekFrom},
@@ -39,8 +39,9 @@ fn read_usb(ep_in: &mut Endpoint<Bulk, In>) -> Result<Buffer, TransferError> {
 fn file_range_command(
     ep_in: &mut Endpoint<Bulk, In>,
     ep_out: &mut Endpoint<Bulk, Out>,
-    pb: &mut ProgressBar,
     game_paths: &[String],
+    progress_len_tx: &mpsc::Sender<u64>,
+    progress_tx: &mpsc::Sender<u64>,
 ) -> color_eyre::Result<()> {
     let file_range_header = read_usb(ep_in)?;
 
@@ -70,7 +71,7 @@ fn file_range_command(
     let file = File::open(game_path)?;
 
     if let Ok(metadata) = file.metadata() {
-        pb.set_length(metadata.len());
+        progress_len_tx.send(metadata.len())?;
     }
 
     let mut reader = BufReader::new(file);
@@ -96,7 +97,7 @@ fn file_range_command(
         debug!("sent {} bytes", read_size);
 
         current_offset += read_size;
-        pb.set_position(current_offset as u64);
+        progress_tx.send(current_offset as u64)?;
     }
 
     Ok(())
@@ -117,6 +118,8 @@ fn send_response_header(
 pub fn perform_tinfoil_usb_install(
     game_backup_path: &Path,
     recurse: bool,
+    progress_len_tx: mpsc::Sender<u64>,
+    progress_tx: mpsc::Sender<u64>,
 ) -> color_eyre::Result<()> {
     let game_paths = read_game_paths(game_backup_path, recurse)?;
     let paths_with_newlines_string_length: usize =
@@ -170,10 +173,6 @@ pub fn perform_tinfoil_usb_install(
 
     eprintln!("Successfully sent list of games to Nintendo Switch, waiting for commands...");
 
-    let mut pb = ProgressBar::no_length().with_style(
-        ProgressStyle::with_template("ETA: {eta} ({binary_bytes_per_sec}) {wide_bar} {binary_bytes} of {binary_total_bytes} sent").unwrap(),
-    );
-
     loop {
         debug!("waiting for header...");
         let command_header = ep_in
@@ -198,12 +197,17 @@ pub fn perform_tinfoil_usb_install(
         match command_id {
             tinfoil_command_ids::EXIT => {
                 debug!("got exit command, exiting...");
-                pb.finish();
                 break;
             }
             tinfoil_command_ids::FILE_RANGE => {
                 debug!("got file range command");
-                file_range_command(&mut ep_in, &mut ep_out, &mut pb, &game_paths)?
+                file_range_command(
+                    &mut ep_in,
+                    &mut ep_out,
+                    &game_paths,
+                    &progress_len_tx,
+                    &progress_tx,
+                )?
             }
             _ => bail!("invalid command ID encountered!"),
         }
