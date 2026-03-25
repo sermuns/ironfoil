@@ -47,7 +47,7 @@ pub fn read_game_paths(game_backup_path: &Path, recurse: bool) -> color_eyre::Re
 
     if game_paths.is_empty() {
         bail!(
-            "No game backup files found in given directory ({})",
+            "No game backup files found in given directory ({})\nDid you forget 'recurse'?",
             game_backup_path.display()
         )
     }

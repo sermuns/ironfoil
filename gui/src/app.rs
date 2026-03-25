@@ -196,7 +196,7 @@ impl Tab {
                 ui.vertical_centered(|ui| {
                     ui.add(egui::Image::new(banner_source).max_height(200.));
                 });
-                ui.label("Select one of the tabs on the left to get started!");
+                ui.label("Select one of the tabs on the left!");
             }
             Tab::Usb {
                 recurse,
@@ -204,12 +204,6 @@ impl Tab {
                 staged_files,
                 maybe_ongoing_installation,
             } => {
-                ui.label("Install a game backup from your computer to your Nintendo Switch using the Tinfoil USB transfer protocol.");
-                ui.label("You can either pick a single backup file or a directory containing multiple backups.");
-                ui.label("Check 'Recurse?' if you also want to recursively discover game backups from subdirectories of that directory.");
-
-                ui.add_space(8. * 2.);
-
                 ui.horizontal(|ui| {
                     if ui.button("💾 Pick file").clicked()
                         && let Some(game_backup_path) = rfd::FileDialog::new()
@@ -235,10 +229,13 @@ impl Tab {
                             toasts,
                         );
                     }
-                    ui.label("and");
-                    ui.checkbox(recurse, "recurse?");
-                    ui.label("and");
-                    ui.checkbox(for_sphaira, "for Sphaira homebrew menu?");
+                    ui.checkbox(recurse, "recurse?").on_hover_text(
+                        "Also discover game backups from subdirectories of the picked directory",
+                    );
+
+                    // FIXME: actually align right
+                    ui.add_space(16.);
+                    ui.checkbox(for_sphaira, "For Sphaira?");
                 });
 
                 ui.group(|ui| {
@@ -372,20 +369,35 @@ impl Tab {
 
                             start_usb_install(game_paths, *for_sphaira, maybe_ongoing_installation);
                         }
-                        ui.weak("or");
                         if ui.button("❌ remove from list").clicked() {
                             staged_files.remove_selected();
                         }
+                        // FIXME: fuckjing horrible
                         ui.weak(format!(
-                            "The {} selected ({}), I want to...",
-                            staged_files.count(),
-                            humansize::format_size(staged_files.total_file_size, humansize::BINARY)
+                            "{} selected ({})",
+                            staged_files
+                                .files
+                                .iter()
+                                .filter(|staged_file| staged_file.selected)
+                                .count(),
+                            humansize::format_size(
+                                staged_files
+                                    .files
+                                    .iter()
+                                    .filter(|staged_file| staged_file.selected)
+                                    .map(|staged_file| staged_file.file_size)
+                                    .sum::<u64>(),
+                                humansize::BINARY
+                            ),
                         ));
                     }
                 });
             }
-            Tab::Network | Tab::Rcm | Tab::Log => {
-                ui.label("UNIMPLEMENTED here! Use the command-line tool for now...");
+            Tab::Network | Tab::Rcm => {
+                ui.label("UNIMPLEMENTED here! Use the command-line version for now...");
+            }
+            Tab::Log => {
+                ui.label("UNIMPLEMENTED..! one day it will not be.");
             }
         }
     }
