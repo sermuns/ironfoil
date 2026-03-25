@@ -6,11 +6,27 @@
 
 A tool to transfer to [many title installers](#which-title-installers-are-supported).
 
-![demo gif](media/demo.gif)
+Exists both as a GUI and CLI app.
+
+<center>
+
+![gui screenshot](media/gui-screenshot1.jpg)
+_Screenshot from `ironfoil-gui`_
+
+</center>
+<br>
+
+<center>
+
+![cli demo](media/demo.gif)
+_Demo of `ironfoil`, the core CLI application_
+
+</center>
+<br>
 
 ## Which title installers are supported?
 
-These, based on the TinFoil USB protocol:
+Using the TinFoil USB protocol, I have tested:
 
 - [Awoo Installer](https://github.com/Huntereb/Awoo-Installer)
 - [CyberFoil](https://github.com/luketanti/CyberFoil)
@@ -21,43 +37,32 @@ and also:
 
 ## Installation
 
-### Binary releases
+> [!IMPORTANT]
+> Make sure to download the right variant for you. The graphical `ironfoil-gui`, might be what you're looking for...
+
+### Installing the GUI (`ironfoil-gui`)
+
+...
+
+### Installing the CLI (`ironfoil`)
 
 Alternatives:
 
 1. Manually download [latest release](https://github.com/sermuns/ironfoil/releases/latest) and extract the tool to a location that is in your `$PATH`.
 
 2. Use [`cargo-binstall`](https://github.com/cargo-bins/cargo-binstall):
+
    ```sh
    cargo binstall ironfoil
    ```
 
-### From source
-
-Alternatives:
-
-1. Install latest release using cargo
+3. Install latest release using cargo (compile from source)
 
    ```sh
    cargo install ironfoil
    ```
 
-2. Install latest git version using cargo:
-
-   ```sh
-   cargo install --git https://github.com/sermuns/ironfoil
-   ```
-
-3. Manually clone then install
-   ```sh
-   git clone https://github.com/sermuns/ironfoil
-   cd ironfoil
-   cargo install --path cli/
-   ```
-
-Both of these methods places `ironfoil` in `~/.cargo/bin/`, which normally should be part of your `$PATH`.
-
-## Usage
+## Usage for the CLI
 
 ```present cargo run --bin ironfoil -- -h
 Transfer to NS title installers from the command-line
