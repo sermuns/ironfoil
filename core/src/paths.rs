@@ -1,23 +1,16 @@
-use color_eyre::eyre::{OptionExt, bail};
-use std::{
-    path::Path,
-    sync::atomic::{AtomicBool, Ordering},
-};
+use color_eyre::eyre::bail;
+use std::path::{Path, PathBuf};
 use walkdir::WalkDir;
 
 pub const GAME_BACKUP_EXTENSIONS: [&str; 3] = ["nsp", "xci", "nsz"];
 
-pub(crate) fn is_game_backup(path: &Path) -> bool {
+fn is_game_backup(path: &Path) -> bool {
     path.extension()
         .and_then(|ext| ext.to_str())
         .is_some_and(|ext| GAME_BACKUP_EXTENSIONS.contains(&ext))
 }
 
-pub(crate) fn read_game_paths(
-    game_backup_path: &Path,
-    recurse: bool,
-    cancel: Option<&AtomicBool>,
-) -> color_eyre::Result<Vec<String>> {
+pub fn read_game_paths(game_backup_path: &Path, recurse: bool) -> color_eyre::Result<Vec<PathBuf>> {
     if !game_backup_path.exists() {
         bail!("Given path ({}) does not exist", game_backup_path.display())
     }
@@ -28,9 +21,9 @@ pub(crate) fn read_game_paths(
         for entry_result in
             WalkDir::new(game_backup_path).max_depth(if recurse { usize::MAX } else { 1 })
         {
-            if cancel.is_some_and(|c| c.load(Ordering::Relaxed)) {
-                return Ok(game_paths);
-            }
+            // if cancel.is_some_and(|c| c.load(Ordering::Relaxed)) {
+            //     return Ok(game_paths);
+            // }
             let Ok(entry) = entry_result else {
                 continue;
             };
@@ -38,18 +31,13 @@ pub(crate) fn read_game_paths(
             if !is_game_backup(path) {
                 continue;
             }
-            let Some(path_str) = path.to_str() else {
-                continue;
-            };
-            game_paths.push(path_str.to_string());
+            game_paths.push(path.to_path_buf());
         }
-    } else if is_game_backup(game_backup_path)
-        && let Some(path_str) = game_backup_path.to_str()
-    {
+    } else if is_game_backup(game_backup_path) {
         if recurse {
             eprintln!("Warning: recurse has no effect when given path is a file, ignoring...");
         }
-        game_paths.push(path_str.to_string());
+        game_paths.push(game_backup_path.to_path_buf());
     } else {
         bail!(
             "Given path ({}) is neither a directory nor a valid game backup file",

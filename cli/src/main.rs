@@ -1,11 +1,9 @@
 use clap::{Args, Parser, Subcommand};
 use indicatif::{ProgressBar, ProgressStyle};
-use ironfoil_core::{perform_tinfoil_network_install, perform_usb_install, send_rcm_payload};
-use std::{
-    net::Ipv4Addr,
-    path::PathBuf,
-    sync::{Arc, atomic::AtomicBool, mpsc},
+use ironfoil_core::{
+    perform_tinfoil_network_install, perform_usb_install, read_game_paths, send_rcm_payload,
 };
+use std::{net::Ipv4Addr, path::PathBuf, sync::mpsc};
 
 #[derive(Debug, Parser)]
 #[command(version, about, long_about = None)]
@@ -81,15 +79,10 @@ fn main() -> color_eyre::Result<()> {
             let (progress_len_tx, progress_len_rx) = mpsc::channel::<u64>();
             let (progress_tx, progress_rx) = mpsc::channel::<u64>();
 
+            let game_paths =
+                read_game_paths(&transfer_args.game_backup_path, transfer_args.recurse)?;
             let usb_install_thread = std::thread::spawn(move || {
-                perform_usb_install(
-                    &transfer_args.game_backup_path,
-                    transfer_args.recurse,
-                    progress_len_tx,
-                    progress_tx,
-                    for_sphaira,
-                    None,
-                )
+                perform_usb_install(&game_paths, progress_len_tx, progress_tx, for_sphaira, None)
             });
 
             while !usb_install_thread.is_finished() {
@@ -120,7 +113,6 @@ fn main() -> color_eyre::Result<()> {
                     target_ip,
                     progress_len_tx,
                     progress_tx,
-                    None,
                 )
             });
 

@@ -2,6 +2,7 @@ use color_eyre::Section;
 use color_eyre::eyre::Context;
 use log::{debug, error, info};
 use percent_encoding::{AsciiSet, CONTROLS, percent_decode_str, utf8_percent_encode};
+use std::path::PathBuf;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, mpsc};
 use std::thread::{self, sleep};
@@ -26,7 +27,7 @@ fn urlencode(input: &str) -> String {
 }
 
 fn serve_http(
-    game_paths: &[String],
+    game_paths: &[PathBuf],
     host_ip: IpAddr,
     run_http_server: Arc<AtomicBool>,
     progress_len_tx: mpsc::Sender<u64>,
@@ -147,9 +148,8 @@ pub fn perform_tinfoil_network_install(
     target_ip: Ipv4Addr,
     progress_len_tx: mpsc::Sender<u64>,
     progress_tx: mpsc::Sender<u64>,
-    cancel: impl Into<Option<Arc<AtomicBool>>>,
 ) -> color_eyre::Result<()> {
-    let game_paths = read_game_paths(game_backup_path, recurse, cancel.into().as_deref())?;
+    let game_paths = read_game_paths(game_backup_path, recurse)?;
     println!("Performing network install to {}", target_ip);
 
     let mut keepalive_stream = TcpStream::connect((target_ip, 2000)).wrap_err_with(|| format!("Target device at {target_ip} (hopefully Nintendo Switch!?) is refusing connections"))
@@ -164,7 +164,7 @@ pub fn perform_tinfoil_network_install(
     debug!("found host ip: {}", host_ip);
     let base_url = format!("http://{}:{}/", host_ip, HOST_HTTP_PORT);
     let urls_with_newlines = game_paths.iter().fold(String::new(), |acc, path| {
-        acc + &base_url + &urlencode(path) + "\n"
+        acc + &base_url + &urlencode(path.to_str().unwrap()) + "\n"
     });
 
     let run_http_server = Arc::new(AtomicBool::new(true));

@@ -5,6 +5,7 @@ use nusb::{
     Endpoint, MaybeFuture, list_devices,
     transfer::{Buffer, Bulk, In, Out, TransferError},
 };
+use std::path::PathBuf;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, mpsc};
 use std::{
@@ -15,11 +16,11 @@ use std::{
 };
 use thiserror::Error;
 
-use crate::paths::read_game_paths;
-
 const USB_TIMEOUT: Duration = Duration::from_millis(500);
 
 mod tinfoil {
+    use std::path::PathBuf;
+
     use super::*;
 
     pub mod command_direction {
@@ -45,7 +46,7 @@ mod tinfoil {
     pub fn file_range_command(
         ep_in: &mut Endpoint<Bulk, In>,
         ep_out: &mut Endpoint<Bulk, Out>,
-        game_paths: &[String],
+        game_paths: &[PathBuf],
         progress_len_tx: &mpsc::Sender<u64>,
         progress_tx: &mpsc::Sender<u64>,
     ) -> color_eyre::Result<()> {
@@ -114,7 +115,7 @@ mod tinfoil {
         ep_in: &mut Endpoint<Bulk, In>,
         ep_out: &mut Endpoint<Bulk, Out>,
         cancel: Option<Arc<AtomicBool>>,
-        game_paths: &[String],
+        game_paths: &[PathBuf],
         progress_len_tx: mpsc::Sender<u64>,
         progress_tx: mpsc::Sender<u64>,
     ) -> color_eyre::Result<()> {
@@ -155,7 +156,7 @@ mod tinfoil {
                     tinfoil::file_range_command(
                         ep_in,
                         ep_out,
-                        &game_paths,
+                        game_paths,
                         &progress_len_tx,
                         &progress_tx,
                     )?
@@ -168,6 +169,8 @@ mod tinfoil {
 }
 
 mod sphaira {
+    use std::path::PathBuf;
+
     use color_eyre::eyre::Context;
 
     use super::*;
@@ -366,7 +369,7 @@ mod sphaira {
         ep_in: &mut Endpoint<Bulk, In>,
         ep_out: &mut Endpoint<Bulk, Out>,
         cancel: Option<Arc<AtomicBool>>,
-        game_paths: &[String],
+        game_paths: &[PathBuf],
         progress_len_tx: mpsc::Sender<u64>,
         progress_tx: mpsc::Sender<u64>,
     ) -> color_eyre::Result<()> {
@@ -420,17 +423,17 @@ mod sphaira {
 }
 
 pub fn perform_usb_install(
-    game_backup_path: &Path,
-    recurse: bool,
+    game_paths: &[PathBuf],
     progress_len_tx: mpsc::Sender<u64>,
     progress_tx: mpsc::Sender<u64>,
     for_sphaira: bool,
     cancel: impl Into<Option<Arc<AtomicBool>>>,
 ) -> color_eyre::Result<()> {
     let cancel = cancel.into();
-    let game_paths = read_game_paths(game_backup_path, recurse, cancel.as_deref())?;
-    let paths_with_newlines_string_length: u32 =
-        game_paths.iter().map(|path| path.len() as u32 + 1).sum();
+    let paths_with_newlines_string_length: u32 = game_paths
+        .iter()
+        .map(|path| path.to_str().unwrap().len() as u32 + 1)
+        .sum();
 
     let device_info = list_devices()
         .wait()?
@@ -485,16 +488,16 @@ pub fn perform_usb_install(
         )?;
         write_usb(
             &mut ep_out,
-            game_paths
-                .iter()
-                .fold(String::new(), |acc, path| acc + path + "\n"),
+            game_paths.iter().fold(String::new(), |acc, path| {
+                acc + path.to_str().unwrap() + "\n"
+            }),
         )?;
     } else {
         write_usb(&mut ep_out, "TUL0")?;
         write_usb(&mut ep_out, paths_with_newlines_string_length.to_le_bytes())?;
         write_usb(&mut ep_out, [0u8; 8])?;
-        for path in &game_paths {
-            write_usb(&mut ep_out, [path.as_str(), "\n"].concat())?;
+        for path in game_paths {
+            write_usb(&mut ep_out, [path.to_str().unwrap(), "\n"].concat())?;
         }
     }
 

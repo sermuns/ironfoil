@@ -1322,6 +1322,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "humansize"
+version = "2.1.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6cb51c9a029ddc91b07a787f1d86b53ccfa49b0e86688c946ebe8d3555685dd7"
+dependencies = [
+ "libm",
+]
+
+[[package]]
 name = "icu_collections"
 version = "2.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1523,6 +1532,7 @@ dependencies = [
  "egui-toast",
  "egui_extras",
  "env_logger",
+ "humansize",
  "ironfoil-core",
  "log",
  "rfd",
