@@ -8,20 +8,20 @@ A tool to transfer to [many title installers](#which-title-installers-are-suppor
 
 Exists both as a GUI and CLI app.
 
-<center>
+<div align=center>
 
 ![gui screenshot](media/gui-screenshot1.jpg)
 _Screenshot from `ironfoil-gui`_
 
-</center>
+</div>
 <br>
 
-<center>
+<div align=center>
 
 ![cli demo](media/demo.gif)
 _Demo of `ironfoil`, the core CLI application_
 
-</center>
+</div>
 <br>
 
 ## Which title installers are supported?
