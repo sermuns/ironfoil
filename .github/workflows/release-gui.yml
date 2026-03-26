@@ -282,6 +282,7 @@ jobs:
         uses: svenstaro/upload-release-action@v2
         with:
           file: artifacts/*
+          file_glob: true
           tag: ${{ needs.plan.outputs.tag }}
           repo_token: ${{ secrets.GITHUB_TOKEN }}
 
