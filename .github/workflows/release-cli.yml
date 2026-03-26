@@ -101,6 +101,7 @@ jobs:
           lfs: true
 
       - name: Set the release version
+        shell: bash
         run: echo "RELEASE_VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
 
       - name: Install Rust toolchain
