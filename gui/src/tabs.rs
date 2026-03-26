@@ -26,8 +26,9 @@ pub enum Tab {
         #[serde(skip)]
         maybe_ongoing_installation: Option<OngoingInstallation>,
     },
-    Rcm,
-    // Log,
+    Rcm {
+        payload_path: Option<PathBuf>,
+    },
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq)]
@@ -38,17 +39,17 @@ pub enum UsbProtocol {
 
 #[derive(Debug, Serialize, Deserialize, PartialEq)]
 pub enum InstallType {
-    USB { protocol: UsbProtocol },
+    Usb { protocol: UsbProtocol },
     Network,
 }
 
 impl InstallType {
     pub fn as_str(&self) -> &str {
         match self {
-            InstallType::USB {
+            InstallType::Usb {
                 protocol: UsbProtocol::TinFoil,
             } => "🔌 USB (Awoo, CyberFoil, etc.)",
-            InstallType::USB {
+            InstallType::Usb {
                 protocol: UsbProtocol::Sphaira,
             } => "🔌 USB (Sphaira)",
             InstallType::Network => "🖧 Network",
@@ -58,7 +59,7 @@ impl InstallType {
 
 impl Default for InstallType {
     fn default() -> Self {
-        Self::USB {
+        Self::Usb {
             protocol: UsbProtocol::TinFoil,
         }
     }
@@ -170,7 +171,7 @@ impl Tab {
         match self {
             Tab::Home => "🏠 Home",
             Tab::Install { .. } => "📥 Install",
-            Tab::Rcm => "📎 RCM",
+            Tab::Rcm { .. } => "📎 RCM",
             // Tab::Log => "📜 Log",
         }
     }
@@ -201,7 +202,7 @@ impl Tab {
                 target_ip_string,
                 target_ip,
             ),
-            Tab::Rcm => rcm::show(ui),
+            Tab::Rcm { payload_path } => rcm::show(ui, payload_path, toasts),
         }
     }
 }

@@ -1,12 +1,10 @@
-use std::net::Ipv4Addr;
-
 use egui::{Align, Align2, Button, Color32, Layout, RichText, TextWrapMode, Theme};
 use egui_toast::Toast;
 use egui_toast::ToastKind;
 use egui_toast::ToastOptions;
 use egui_toast::Toasts;
-use log::info;
 use serde::{Deserialize, Serialize};
+use std::net::Ipv4Addr;
 use strum::IntoEnumIterator;
 
 use crate::tabs::Tab;

@@ -7,6 +7,8 @@ use nusb::{
 use std::io::Write;
 use std::{fs::File, io::Read, num::TryFromIntError, path::Path, time::Duration};
 
+use crate::paths::RCM_PAYLOAD_EXTENSIONS;
+
 const INTERMEZZO: [u8; 92] = [
     0x44, 0x00, 0x9f, 0xe5, 0x01, 0x11, 0xa0, 0xe3, 0x40, 0x20, 0x9f, 0xe5, 0x00, 0x20, 0x42, 0xe0,
     0x08, 0x00, 0x00, 0xeb, 0x01, 0x01, 0xa0, 0xe3, 0x10, 0xff, 0x2f, 0xe1, 0x00, 0x00, 0xa0, 0xe1,
@@ -61,8 +63,14 @@ fn create_rcm_payload(payload: &[u8]) -> Result<Vec<u8>, TryFromIntError> {
 }
 
 pub fn send_rcm_payload(payload_path: &Path) -> color_eyre::Result<()> {
-    if payload_path.extension().is_none_or(|ext| ext != "bin") {
-        bail!("RCM payload file must have a .bin extension")
+    if payload_path.extension().is_none_or(|ext| {
+        !ext.to_str()
+            .is_some_and(|ext| RCM_PAYLOAD_EXTENSIONS.contains(&ext))
+    }) {
+        bail!(
+            "RCM payload file must have a valid extension ({:?})",
+            RCM_PAYLOAD_EXTENSIONS
+        );
     }
 
     let mut payload_file = File::open(payload_path).context("Unable to open RCM payload file")?;

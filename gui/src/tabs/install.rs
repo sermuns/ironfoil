@@ -31,7 +31,7 @@ pub fn show(
     ui.horizontal(|ui| {
         if ui.button("💾 Pick file").clicked()
             && let Some(game_backup_path) = rfd::FileDialog::new()
-                .add_filter("*", &GAME_BACKUP_EXTENSIONS)
+                .add_filter("Nintendo Switch game backups", &GAME_BACKUP_EXTENSIONS)
                 .pick_file()
         {
             stage_picked(Pick::File(game_backup_path), staged_files, toasts);
@@ -80,20 +80,20 @@ pub fn show(
                 .show_ui(ui, |ui| {
                     ui.selectable_value(
                         install_type,
-                        InstallType::USB {
+                        InstallType::Usb {
                             protocol: UsbProtocol::TinFoil,
                         },
-                        InstallType::USB {
+                        InstallType::Usb {
                             protocol: UsbProtocol::TinFoil,
                         }
                         .as_str(),
                     );
                     ui.selectable_value(
                         install_type,
-                        InstallType::USB {
+                        InstallType::Usb {
                             protocol: UsbProtocol::Sphaira,
                         },
-                        InstallType::USB {
+                        InstallType::Usb {
                             protocol: UsbProtocol::Sphaira,
                         }
                         .as_str(),
@@ -233,7 +233,7 @@ pub fn show(
 
             if ui
                 .button(match install_type {
-                    InstallType::USB { .. } => "🔌 install over USB!",
+                    InstallType::Usb { .. } => "🔌 install over USB!",
                     InstallType::Network => "🖧 install over network!",
                 })
                 .clicked()
@@ -291,7 +291,7 @@ fn start_install(
     let cancel_thread = cancel.clone();
 
     let thread = match install_type {
-        InstallType::USB { protocol } => {
+        InstallType::Usb { protocol } => {
             let for_sphaira = matches!(protocol, UsbProtocol::Sphaira);
             std::thread::spawn(move || {
                 perform_usb_install(

@@ -10,11 +10,8 @@ use std::{
     fs::File,
     io::{BufRead, BufReader, Read, Seek, SeekFrom, Write},
     net::{IpAddr, Ipv4Addr, TcpListener, TcpStream},
-    path::Path,
     time::Duration,
 };
-
-use crate::paths::read_game_paths;
 
 // TODO: listen to random high-range port instead, it really doesn't matter!
 // also maybe keep trying to find available port if collision happens
