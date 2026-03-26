@@ -1,10 +1,14 @@
 # Changelog
 
-## [0.3.0](https://github.com/sermuns/ironfoil/compare/v0.2.0..0.3.0) - 2026-03-26
+## [0.2.1](https://github.com/sermuns/ironfoil/compare/v0.2.0..0.2.1) - 2026-03-26
 
 ### 🚀 Features
 
-- add program icon and stop console on Windows by @sermuns in [5061662](https://github.com/sermuns/ironfoil/commit/5061662084f3a640248cdc57ff320f4a9cc2c3d1)
+- add program icon and stop console on Windows by sermuns in [eccd7b5](https://github.com/sermuns/ironfoil/commit/eccd7b564d18f15c5e0558c2e3d91a59aba9b598)
+
+### ⚙️ Miscellaneous Tasks
+
+- release v0.2.1 by sermuns in [c6fb257](https://github.com/sermuns/ironfoil/commit/c6fb2572b54c456775e9b9900acb99a28aa08343)
 ## [v0.2.0](https://github.com/sermuns/ironfoil/compare/v0.1.6..v0.2.0) - 2026-03-26
 
 ### 🚀 Features
