@@ -1,4 +1,4 @@
-use egui::Theme;
+use egui::{Direction, Layout, Theme};
 
 pub fn show(ui: &mut egui::Ui, theme: &egui::Theme) {
     // FIXME: this relative path shit fucking sucks..
@@ -7,7 +7,7 @@ pub fn show(ui: &mut egui::Ui, theme: &egui::Theme) {
         Theme::Light => egui::include_image!("../../../media/banner-light.svg"),
     };
     ui.vertical_centered(|ui| {
-        ui.add(egui::Image::new(banner_source).max_height(200.));
+        ui.add(egui::Image::new(banner_source).max_height(250.));
+        ui.label("Select one of the tabs on the left!");
     });
-    ui.label("Select one of the tabs on the left!");
 }

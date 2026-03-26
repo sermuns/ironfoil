@@ -111,9 +111,6 @@ impl eframe::App for App {
             });
 
         egui::CentralPanel::default().show(ctx, |ui| {
-            ui.heading(env!("CARGO_PKG_NAME"));
-            ui.separator();
-            ui.add_space(8.);
             self.tab.show(
                 ui,
                 &ctx.theme(),
