@@ -1,4 +1,4 @@
-use egui::{Direction, Layout, Theme};
+use egui::Theme;
 
 pub fn show(ui: &mut egui::Ui, theme: &egui::Theme) {
     // FIXME: this relative path shit fucking sucks..
