@@ -20,6 +20,12 @@
 
 - use installer-generic language in error by @sermuns in [ef1eb8f](https://github.com/sermuns/ironfoil/commit/ef1eb8fbe9b84f24bce273f69acff617456064c6)
 - align center by @sermuns in [c986fc8](https://github.com/sermuns/ironfoil/commit/c986fc8ff9d0e609f4092ac5949147de543875a3)
+- hopefully make windows correctly parse release version? by @sermuns in [f93bdc0](https://github.com/sermuns/ironfoil/commit/f93bdc0708377321c032dd8531c197a644439ad9)
+- symlink media for crates.io.. by @sermuns in [0c69754](https://github.com/sermuns/ironfoil/commit/0c69754e48acf21ac1cf21f3f9f4e5b7d12adcd2)
+- enable file_glob by @sermuns in [462958d](https://github.com/sermuns/ironfoil/commit/462958d2d1b01fc1445bdd3b3b866debd3d08496)
+- only build & publish CLI by @sermuns in [460f80e](https://github.com/sermuns/ironfoil/commit/460f80e2c7abae9b82faf459b81963e6ce7c3bc8)
+- force bash in release notes by @sermuns in [0a39755](https://github.com/sermuns/ironfoil/commit/0a39755829e05b63c4063ef20d04b94bf3c0b55e)
+- publish ironfoil-core before cli by @sermuns in [3ee98d8](https://github.com/sermuns/ironfoil/commit/3ee98d8a3cddea41e91c17b8a0b3a87e31804238)
 
 ### 🚜 Refactor
 
@@ -39,7 +45,14 @@
 - update README and description for more general title installers by @sermuns in [bf8d530](https://github.com/sermuns/ironfoil/commit/bf8d5304e0de7f7fc4e9347c24d1223843f148c8)
 - make features bump minor by @sermuns in [b45f10e](https://github.com/sermuns/ironfoil/commit/b45f10ef0417ae78acf64137182466cb6423d272)
 - allow dirty ci by @sermuns in [309bf8b](https://github.com/sermuns/ironfoil/commit/309bf8b7c1b4bf69b6c0714097e9319eeb386951)
-- don't use cargo-dist for CLI by @sermuns in [376a732](https://github.com/sermuns/ironfoil/commit/376a7323977d90cdcbbc2397b34baeb81c066db4)
+- don't use cargo-dist for CLI by @sermuns in [1ec963b](https://github.com/sermuns/ironfoil/commit/1ec963bb91f7dcd731e602ca67a67d1ee1d2081f)
+- skip pre-building.. by @sermuns in [bd923e8](https://github.com/sermuns/ironfoil/commit/bd923e835d242dcff4b4008ec684adae05c6f5a8)
+- simplify dist by @sermuns in [8507648](https://github.com/sermuns/ironfoil/commit/8507648c49d71f4ed1b52ae13d15b0225b53f86e)
+- name cli artifacts without version, as gui does by @sermuns in [f96f199](https://github.com/sermuns/ironfoil/commit/f96f199ae0f4f8e43316f3d4c1ec0ed1c2a8a32f)
+- add release notes to gui release too, cleanup.. by @sermuns in [a7c0aee](https://github.com/sermuns/ironfoil/commit/a7c0aeeeba257164a12dbdba531443cfee0bc275)
+- stop releasing for i686 linux by @sermuns in [abc0cb2](https://github.com/sermuns/ironfoil/commit/abc0cb2713e78637116f1083a838d0a6b66ad6ea)
+- add rust-cache by @sermuns in [0945ba8](https://github.com/sermuns/ironfoil/commit/0945ba879977c17a9920cdf4e445ee10225de186)
+- release v0.2.0 by Samuel Åkesson in [7559cf2](https://github.com/sermuns/ironfoil/commit/7559cf2d2f5f0918505e335b2c8ce3f48f94a2e6)
 ## [v0.1.6](https://github.com/sermuns/ironfoil/compare/v0.1.5..v0.1.6) - 2026-03-05
 
 ### 🚀 Features
