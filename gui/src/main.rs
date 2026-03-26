@@ -1,6 +1,7 @@
 #![windows_subsystem = "windows"]
 
 mod app;
+mod tabs;
 
 fn main() -> eframe::Result {
     env_logger::init();
