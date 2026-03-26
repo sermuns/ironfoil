@@ -142,6 +142,7 @@ jobs:
           fi
 
       - name: Release notes
+        shell: bash
         id: release-notes
         run: |
           echo "RELEASE_BODY<<EOF" >> $GITHUB_OUTPUT
