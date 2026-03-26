@@ -1,6 +1,6 @@
 # Based on https://github.com/orhun/binsider/blob/a314d3c69504c346442870ee4d500e9883c7ec6c/.github/workflows/cd.yml
 
-name: CD
+name: Release CLI
 on:
   push:
     tags:

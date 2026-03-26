@@ -11,6 +11,7 @@ version = "0.1.6"
 edition = "2024"
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/sermuns/ironfoil"
+authors = ["sermuns <sermuns@lysator.liu.se>"]
 
 [workspace.dependencies]
 log = "0.4"
@@ -24,3 +25,6 @@ panic = "unwind"
 lto = true
 codegen-units = 1
 strip = true
+
+[profile.dist]
+inherits = "release"
