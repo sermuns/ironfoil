@@ -1,5 +1,5 @@
 use clap::{Args, Parser, Subcommand};
-use indicatif::{ProgressBar, ProgressStyle};
+use indicatif::{MultiProgress, ProgressBar, ProgressStyle};
 use ironfoil_core::{
     InstallProgressEvent, InstallProgressSender, UsbProtocol, perform_tinfoil_network_install,
     perform_usb_install, read_game_paths, send_rcm_payload,
@@ -119,33 +119,61 @@ where
         + Send
         + 'static,
 {
-    let total_pb = ProgressBar::no_length().with_style(
-        ProgressStyle::with_template("ETA: {eta} ({binary_bytes_per_sec}) {wide_bar} {binary_bytes} of {binary_total_bytes} sent").unwrap(),
+    let multi_progress = MultiProgress::new();
+
+    let total_pb = multi_progress.add(
+        ProgressBar::no_length().with_style(
+            ProgressStyle::with_template(
+                "All files | ETA: {eta} {wide_bar} {binary_bytes} of {binary_total_bytes} sent",
+            )
+            .unwrap(),
+        ),
     );
-    let file_pb = ProgressBar::no_length().with_style(
-        ProgressStyle::with_template(
-            "{msg} ({binary_bytes_per_sec}) {wide_bar} {binary_bytes} of {binary_total_bytes} sent",
-        )
-        .unwrap(),
+    let file_pb = multi_progress.add(
+        ProgressBar::no_length().with_style(
+            ProgressStyle::with_template(
+                "{msg} | ({binary_bytes_per_sec}) {wide_bar} {binary_bytes} of {binary_total_bytes} sent",
+            )
+            .unwrap(),
+        ),
     );
 
     let game_paths = read_game_paths(game_backup_path, recurse)?;
+    let num_games_to_install = game_paths.len();
 
     let (progress_tx, progress_rx) = mpsc::channel::<InstallProgressEvent>();
 
     let install_thread = std::thread::spawn(move || install_closure(game_paths, progress_tx));
 
     loop {
-        match progress_rx.recv()? {
-            InstallProgressEvent::AllFilesLengthBytes(length) => total_pb.set_length(length),
-            InstallProgressEvent::AllFilesOffsetBytes(offset) => total_pb.set_position(offset),
-            InstallProgressEvent::CurrentFileLengthBytes(length) => file_pb.set_length(length),
-            InstallProgressEvent::CurrentFileOffsetBytes(offset) => file_pb.set_position(offset),
-            InstallProgressEvent::CurrentFileName(name) => file_pb.set_message(name),
-            InstallProgressEvent::Ended => break,
+        if let Ok(event) = progress_rx.recv() {
+            match event {
+                InstallProgressEvent::AllFilesLengthBytes(length) => total_pb.set_length(length),
+                InstallProgressEvent::AllFilesOffsetBytes(offset) => total_pb.set_position(offset),
+                InstallProgressEvent::CurrentFileLengthBytes(length) => file_pb.set_length(length),
+                InstallProgressEvent::CurrentFileOffsetBytes(offset) => {
+                    file_pb.set_position(offset);
+                }
+                InstallProgressEvent::CurrentFileName(name) => file_pb.set_message(name),
+                InstallProgressEvent::Ended => {
+                    total_pb.finish();
+                    file_pb.finish_and_clear();
+                    break;
+                }
+            }
+        } else {
+            eprintln!("Install thread stopped unexpectedly without sending `Ended` event!");
+            break;
         }
     }
 
     install_thread.join().expect("joining install thread")?;
+
+    eprintln!(
+        "Successfully installed {} game{}!",
+        num_games_to_install,
+        if num_games_to_install == 1 { "" } else { "s" }
+    );
+
     Ok(())
 }
