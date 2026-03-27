@@ -353,7 +353,6 @@ mod sphaira {
 
         let _ = progress_len_tx.send(file_size);
 
-        // WARNING: probably is wrong, has bugs..
         let size_lsb = file_size as u32;
         let size_msb = ((file_size >> 32) as u16) as u32 | (flags << 16);
         send_result(ep_out, RESULT_OK, size_msb, size_lsb)?;
