@@ -10,8 +10,9 @@ Exists both as a GUI and CLI app.
 
 <div align=center>
 
-![gui screenshot](media/gui-screenshot1.jpg)
-_Screenshot from `ironfoil-gui`_
+![gui screenshot1](media/gui-screenshot1.jpg)
+![gui screenshot2](media/gui-screenshot2.jpg)
+_Screenshots from `ironfoil-gui`_
 
 </div>
 <br>
