@@ -256,23 +256,10 @@ pub fn show(
             if ui.button("❌ remove from list").clicked() {
                 staged_files.remove_selected();
             }
-            // FIXME: fuckjing horrible
             ui.weak(format!(
                 "{} selected ({})",
-                staged_files
-                    .files
-                    .iter()
-                    .filter(|staged_file| staged_file.selected)
-                    .count(),
-                humansize::format_size(
-                    staged_files
-                        .files
-                        .iter()
-                        .filter(|staged_file| staged_file.selected)
-                        .map(|staged_file| staged_file.file_size)
-                        .sum::<u64>(),
-                    humansize::BINARY
-                ),
+                staged_files.selected_count(),
+                staged_files.selected_human_size(),
             ));
         }
     });

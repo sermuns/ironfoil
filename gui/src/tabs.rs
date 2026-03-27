@@ -135,6 +135,23 @@ impl StagedFiles {
     fn count(&self) -> usize {
         self.files.len()
     }
+
+    fn selected_count(&self) -> usize {
+        self.files
+            .iter()
+            .filter(|staged_file| staged_file.selected)
+            .count()
+    }
+
+    fn selected_human_size(&self) -> String {
+        let selected_size: u64 = self
+            .files
+            .iter()
+            .filter(|staged_file| staged_file.selected)
+            .map(|staged_file| staged_file.file_size)
+            .sum();
+        humansize::format_size(selected_size, humansize::BINARY)
+    }
 }
 
 #[derive(Clone)]
