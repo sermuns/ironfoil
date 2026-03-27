@@ -1518,6 +1518,7 @@ dependencies = [
  "log",
  "nusb",
  "percent-encoding",
+ "serde",
  "thiserror 1.0.69",
  "walkdir",
 ]

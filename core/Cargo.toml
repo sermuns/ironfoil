@@ -19,3 +19,4 @@ color-eyre.workspace = true
 walkdir = "2"
 crc32c = "0.6"
 crc32fast = "1.5"
+serde.workspace = true

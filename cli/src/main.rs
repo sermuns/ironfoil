@@ -1,7 +1,7 @@
 use clap::{Args, Parser, Subcommand};
 use indicatif::{ProgressBar, ProgressStyle};
 use ironfoil_core::{
-    InstallProgressEvent, InstallProgressSender, perform_tinfoil_network_install,
+    InstallProgressEvent, InstallProgressSender, UsbProtocol, perform_tinfoil_network_install,
     perform_usb_install, read_game_paths, send_rcm_payload,
 };
 use std::{
@@ -77,13 +77,20 @@ fn main() -> color_eyre::Result<()> {
                     recurse,
                 },
             for_sphaira,
-        } => run_install(
-            &game_backup_path,
-            recurse,
-            move |game_paths, progress_tx| {
-                perform_usb_install(&game_paths, progress_tx, for_sphaira, None)
-            },
-        )?,
+        } => {
+            let usb_protocol = if for_sphaira {
+                UsbProtocol::Sphaira
+            } else {
+                UsbProtocol::TinFoil
+            };
+            run_install(
+                &game_backup_path,
+                recurse,
+                move |game_paths, progress_tx| {
+                    perform_usb_install(&game_paths, progress_tx, usb_protocol, None)
+                },
+            )
+        }
         InstallType::Network {
             install_args:
                 InstallArgs {
@@ -97,10 +104,9 @@ fn main() -> color_eyre::Result<()> {
             move |game_paths, progress_tx| {
                 perform_tinfoil_network_install(game_paths, target_ip, progress_tx, None)
             },
-        )?,
-        InstallType::Rcm { payload_path } => send_rcm_payload(&payload_path)?,
+        ),
+        InstallType::Rcm { payload_path } => send_rcm_payload(&payload_path),
     }
-    Ok(())
 }
 
 fn run_install<F>(

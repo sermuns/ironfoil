@@ -1,5 +1,5 @@
 use egui_toast::{ToastKind, Toasts};
-use ironfoil_core::{InstallProgressEvent, InstallProgressReceiver};
+use ironfoil_core::{InstallProgressEvent, InstallProgressReceiver, UsbProtocol};
 use log::{error, info};
 use serde::{Deserialize, Serialize};
 use std::{
@@ -30,12 +30,6 @@ pub enum Tab {
     Rcm {
         payload_path: Option<PathBuf>,
     },
-}
-
-#[derive(Debug, Serialize, Deserialize, PartialEq)]
-pub enum UsbProtocol {
-    TinFoil,
-    Sphaira,
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq)]

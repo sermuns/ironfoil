@@ -6,7 +6,7 @@ use nusb::{
 };
 use std::{path::PathBuf, sync::atomic::AtomicBool, time::Duration};
 
-use crate::InstallProgressSender;
+use crate::{InstallProgressSender, UsbProtocol};
 
 mod sphaira;
 mod tinfoil;
@@ -16,7 +16,7 @@ pub const USB_TIMEOUT: Duration = Duration::from_millis(500);
 pub fn perform_usb_install(
     game_paths: &[PathBuf],
     progress_tx: InstallProgressSender,
-    for_sphaira: bool,
+    usb_protocol: UsbProtocol,
     cancel: Option<&AtomicBool>,
 ) -> color_eyre::Result<()> {
     let paths_with_newlines_string_length: u32 = game_paths
@@ -60,8 +60,9 @@ pub fn perform_usb_install(
     let mut ep_in = interface.endpoint::<Bulk, In>(0x81)?;
     ep_in.clear_halt().wait()?;
 
-    if for_sphaira {
-        sphaira::validate_send_header(&mut ep_in).wrap_err(
+    match usb_protocol {
+        UsbProtocol::Sphaira => {
+            sphaira::validate_send_header(&mut ep_in).wrap_err(
             [
                 "Failed to perform initial handshake with Sphaira.",
                 "Ensure Sphaira is open on the Nintendo Switch, and in the menu 'USB Install'.",
@@ -69,38 +70,43 @@ pub fn perform_usb_install(
             ]
             .join("\n"),
         )?;
-        sphaira::send_result(
-            &mut ep_out,
-            sphaira::RESULT_OK,
-            Some(paths_with_newlines_string_length),
-            None,
-        )?;
-        write_usb(
-            &mut ep_out,
-            game_paths.iter().fold(String::new(), |acc, path| {
-                acc + path.to_str().unwrap() + "\n"
-            }),
-        )?;
-    } else {
-        write_usb(&mut ep_out, "TUL0")?;
-        write_usb(&mut ep_out, paths_with_newlines_string_length.to_le_bytes())?;
-        write_usb(&mut ep_out, [0u8; 8])?;
-        for path in game_paths {
-            write_usb(&mut ep_out, [path.to_str().unwrap(), "\n"].concat())?;
+            sphaira::send_result(
+                &mut ep_out,
+                sphaira::RESULT_OK,
+                Some(paths_with_newlines_string_length),
+                None,
+            )?;
+            write_usb(
+                &mut ep_out,
+                game_paths.iter().fold(String::new(), |acc, path| {
+                    acc + path.to_str().unwrap() + "\n"
+                }),
+            )?;
+        }
+        UsbProtocol::TinFoil => {
+            write_usb(&mut ep_out, "TUL0")?;
+            write_usb(&mut ep_out, paths_with_newlines_string_length.to_le_bytes())?;
+            write_usb(&mut ep_out, [0u8; 8])?;
+            for path in game_paths {
+                write_usb(&mut ep_out, [path.to_str().unwrap(), "\n"].concat())?;
+            }
         }
     }
 
     eprintln!("Sent list of games to Nintendo Switch.");
 
-    if for_sphaira {
-        eprintln!("Starting Sphaira USB install.");
-        sphaira::do_workloop(&mut ep_in, &mut ep_out, cancel, game_paths, progress_tx)
-            .inspect_err(|_| {
-                let _ = sphaira::send_result(&mut ep_out, sphaira::RESULT_ERROR, None, None);
-            })?;
-    } else {
-        eprintln!("Starting tinfoil USB install.");
-        tinfoil::do_workloop(&mut ep_in, &mut ep_out, cancel, game_paths, progress_tx)?;
+    match usb_protocol {
+        UsbProtocol::Sphaira => {
+            eprintln!("Starting Sphaira USB install.");
+            sphaira::do_workloop(&mut ep_in, &mut ep_out, cancel, game_paths, progress_tx)
+                .inspect_err(|_| {
+                    let _ = sphaira::send_result(&mut ep_out, sphaira::RESULT_ERROR, None, None);
+                })?;
+        }
+        UsbProtocol::TinFoil => {
+            eprintln!("Starting tinfoil USB install.");
+            tinfoil::do_workloop(&mut ep_in, &mut ep_out, cancel, game_paths, progress_tx)?;
+        }
     }
 
     let num_games_installed = game_paths.len();
