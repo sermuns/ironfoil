@@ -9,11 +9,11 @@ use std::{net::Ipv4Addr, path::PathBuf, sync::mpsc};
 #[command(version, about, long_about = None)]
 struct Cli {
     #[command(subcommand)]
-    transfer_type: TransferType,
+    install_type: InstallType,
 }
 
 #[derive(Debug, Args)]
-struct TransferArgs {
+struct InstallArgs {
     /// Path to a game backup file or directory containing game backup files
     game_backup_path: PathBuf,
 
@@ -23,12 +23,12 @@ struct TransferArgs {
 }
 
 #[derive(Debug, Subcommand)]
-enum TransferType {
+enum InstallType {
     /// Transfer over USB
     #[command(arg_required_else_help = true)]
     Usb {
         #[command(flatten)]
-        transfer_args: TransferArgs,
+        transfer_args: InstallArgs,
 
         /// If transferring to Sphaira homebrew menu
         #[arg(long = "sphaira")]
@@ -39,7 +39,7 @@ enum TransferType {
     #[command(arg_required_else_help = true)]
     Network {
         #[command(flatten)]
-        transfer_args: TransferArgs,
+        transfer_args: InstallArgs,
 
         /// The IP address of the Nintendo Switch
         target_ip: Ipv4Addr,
@@ -72,8 +72,8 @@ fn main() -> color_eyre::Result<()> {
 
     // TODO: deduplicate, generalise Usb and Network transfer code here...
     // maybe create a generic functin that accepts any transfer function?
-    match args.transfer_type {
-        TransferType::Usb {
+    match args.install_type {
+        InstallType::Usb {
             transfer_args,
             for_sphaira,
         } => {
@@ -100,7 +100,7 @@ fn main() -> color_eyre::Result<()> {
                 .join()
                 .expect("joining usb install thread")?;
         }
-        TransferType::Network {
+        InstallType::Network {
             transfer_args,
             target_ip,
         } => {
@@ -132,7 +132,7 @@ fn main() -> color_eyre::Result<()> {
                 .join()
                 .expect("joining usb install thread")?;
         }
-        TransferType::Rcm { payload_path } => send_rcm_payload(&payload_path)?,
+        InstallType::Rcm { payload_path } => send_rcm_payload(&payload_path)?,
     }
     Ok(())
 }
