@@ -196,7 +196,7 @@ impl Tab {
     pub fn show(
         &mut self,
         ui: &mut egui::Ui,
-        theme: &egui::Theme,
+        theme: egui::Theme,
         toasts: &mut Toasts,
         target_ip_string: &mut String,
         target_ip: &mut Option<Ipv4Addr>,

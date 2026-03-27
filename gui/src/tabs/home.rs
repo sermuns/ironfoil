@@ -1,6 +1,6 @@
 use egui::Theme;
 
-pub fn show(ui: &mut egui::Ui, theme: &egui::Theme) {
+pub fn show(ui: &mut egui::Ui, theme: egui::Theme) {
     // FIXME: this relative path shit fucking sucks..
     let banner_source = match theme {
         Theme::Dark => egui::include_image!("../../../media/banner-dark.svg"),

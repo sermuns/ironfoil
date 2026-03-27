@@ -19,7 +19,7 @@ use crate::{app::add_toast, tabs::InstallType};
 #[allow(clippy::too_many_arguments)] // FIXME:
 pub fn show(
     ui: &mut egui::Ui,
-    theme: &egui::Theme,
+    theme: egui::Theme,
     recurse: &mut bool,
     install_type: &mut InstallType,
     staged_files: &mut StagedFiles,
@@ -68,7 +68,7 @@ pub fn show(
                     text_edit = text_edit.background_color(match theme {
                         Theme::Dark => Color32::DARK_RED,
                         Theme::Light => Color32::LIGHT_RED,
-                    })
+                    });
                 }
 
                 if ui.add(text_edit).changed() {
@@ -155,7 +155,7 @@ pub fn show(
                             humansize::BINARY,
                         ));
                     });
-                })
+                });
             });
     });
     ui.with_layout(Layout::right_to_left(Align::Center), |ui| {
@@ -198,7 +198,7 @@ pub fn show(
                 }
 
                 match ongoing_installation.thread.join() {
-                    Ok(Ok(_)) => {
+                    Ok(Ok(())) => {
                         info!("installation thread finished with success");
                         add_toast(
                             toasts,
@@ -222,7 +222,7 @@ pub fn show(
                             format!("Installation crashed:\n{:?}", e),
                         );
                     }
-                };
+                }
             }
         } else if !staged_files.is_empty() {
             let game_paths: Vec<_> = staged_files
@@ -242,7 +242,7 @@ pub fn show(
                     start_install(
                         game_paths,
                         install_type,
-                        target_ip,
+                        *target_ip,
                         maybe_ongoing_installation,
                     );
                 } else {
@@ -268,7 +268,7 @@ pub fn show(
 fn start_install(
     game_paths: Vec<PathBuf>,
     install_type: &InstallType,
-    target_ip: &Ipv4Addr,
+    target_ip: Ipv4Addr,
     maybe_ongoing_installation: &mut Option<OngoingInstallation>,
 ) {
     let (progress_len_tx, progress_len_rx) = mpsc::channel::<u64>();
@@ -290,18 +290,15 @@ fn start_install(
                 )
             })
         }
-        InstallType::Network => {
-            let target_ip = *target_ip;
-            std::thread::spawn(move || {
-                perform_tinfoil_network_install(
-                    game_paths,
-                    target_ip,
-                    progress_len_tx,
-                    progress_tx,
-                    Some(cancel_thread),
-                )
-            })
-        }
+        InstallType::Network => std::thread::spawn(move || {
+            perform_tinfoil_network_install(
+                game_paths,
+                target_ip,
+                progress_len_tx,
+                progress_tx,
+                Some(cancel_thread),
+            )
+        }),
     };
 
     *maybe_ongoing_installation = Some(OngoingInstallation {

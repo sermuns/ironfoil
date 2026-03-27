@@ -46,20 +46,19 @@ impl App {
             style.visuals.striped = true;
         });
 
-        if let Some(storage) = cc.storage {
-            eframe::get_value(storage, eframe::APP_KEY)
-                .map(|mut stored: App| {
-                    // kinda shitty, but works
-                    stored.target_ip_string = stored
-                        .target_ip
-                        .map(|ip| ip.to_string())
-                        .unwrap_or_default();
-                    stored
-                })
-                .unwrap_or_default()
-        } else {
-            Default::default()
-        }
+        let Some(storage) = cc.storage else {
+            return App::default();
+        };
+        eframe::get_value(storage, eframe::APP_KEY)
+            .map(|mut stored: App| {
+                // kinda shitty, but works
+                stored.target_ip_string = stored
+                    .target_ip
+                    .map(|ip| ip.to_string())
+                    .unwrap_or_default();
+                stored
+            })
+            .unwrap_or_default()
     }
 }
 
@@ -113,7 +112,7 @@ impl eframe::App for App {
         egui::CentralPanel::default().show(ctx, |ui| {
             self.tab.show(
                 ui,
-                &ctx.theme(),
+                ctx.theme(),
                 &mut self.toasts,
                 &mut self.target_ip_string,
                 &mut self.target_ip,

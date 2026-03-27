@@ -18,30 +18,31 @@ pub fn show(ui: &mut egui::Ui, payload_path: &mut Option<PathBuf>, toasts: &mut 
             ui.weak("No payload selected");
             return;
         };
-        ui.weak(payload_path.display().to_string());
 
-        if ui.button("🔌 Send payload").clicked() {
-            match ironfoil_core::send_rcm_payload(payload_path) {
-                Ok(()) => {
-                    info!("successfully sent RCM payload '{}'", payload_path.display());
-                    add_toast(
-                        toasts,
-                        ToastKind::Success,
-                        format!("Successfully sent RCM payload '{}'", payload_path.display()),
-                    );
-                }
-                Err(e) => {
-                    error!("error while sending RCM payload:\n{:?}", e);
-                    add_toast(
-                        toasts,
-                        ToastKind::Error,
-                        format!(
-                            "Error while sending RCM payload '{}':\n{:?}",
-                            payload_path.display(),
-                            e
-                        ),
-                    );
-                }
+        ui.weak(payload_path.display().to_string());
+        if !ui.button("🔌 Send payload").clicked() {
+            return;
+        }
+        match ironfoil_core::send_rcm_payload(payload_path) {
+            Ok(()) => {
+                info!("successfully sent RCM payload '{}'", payload_path.display());
+                add_toast(
+                    toasts,
+                    ToastKind::Success,
+                    format!("Successfully sent RCM payload '{}'", payload_path.display()),
+                );
+            }
+            Err(e) => {
+                error!("error while sending RCM payload:\n{:?}", e);
+                add_toast(
+                    toasts,
+                    ToastKind::Error,
+                    format!(
+                        "Error while sending RCM payload '{}':\n{:?}",
+                        payload_path.display(),
+                        e
+                    ),
+                );
             }
         }
     });
