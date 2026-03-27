@@ -42,7 +42,7 @@ struct SendHeader {
 
 impl SendHeader {
     fn get_offset(&self) -> u64 {
-        ((self.arg2 as u64) << 32) | (self.arg3 as u64)
+        (u64::from(self.arg2) << 32) | u64::from(self.arg3)
     }
     fn get_size(&self) -> usize {
         self.arg4 as usize
@@ -69,10 +69,10 @@ enum SendHeaderError {
 fn get_send_header(ep_in: &mut Endpoint<Bulk, In>) -> Result<SendHeader, SendHeaderError> {
     let response = read_usb(ep_in)?;
 
-    let mut args = response.chunks(4);
+    let mut chunks = response.chunks(4);
 
-    let [magic, arg2, arg3, arg4, _arg5, crc32c] =
-        std::array::from_fn(|_| u32::from_le_bytes(args.next().unwrap().try_into().unwrap()));
+    let [magic, arg2, arg3, arg4, _, crc32c] =
+        std::array::from_fn(|_| u32::from_le_bytes(chunks.next().unwrap().try_into().unwrap()));
 
     if magic != EXPECTED_MAGIC {
         error!(
@@ -197,7 +197,7 @@ fn transfer_single_file(
     let _ = progress_len_tx.send(file_size);
 
     let size_lsb = file_size as u32;
-    let size_msb = ((file_size >> 32) as u16) as u32 | (flags << 16);
+    let size_msb = u32::from((file_size >> 32) as u16) | (flags << 16);
     send_result(ep_out, RESULT_OK, size_msb, size_lsb)?;
 
     let file = File::open(game_path)?;
@@ -247,7 +247,7 @@ pub fn do_workloop(
                     ep_in,
                     ep_out,
                     // FIXME: fucked up!!! avoid Arc nonsense within this file!
-                    cancel.as_ref().map(|c| c.as_ref()),
+                    cancel.as_ref().map(AsRef::as_ref),
                     game_path,
                     // FIXME: fucked up!!! refernence of Sender!?
                     &progress_len_tx,

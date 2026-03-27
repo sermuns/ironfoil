@@ -59,7 +59,7 @@ pub fn file_range_command(
             "Nintendo Switch tried to request game backup ({}) not present on host",
             game_path
         );
-    };
+    }
 
     info!("sending {}", &game_path);
 
@@ -148,7 +148,7 @@ pub fn do_workloop(
             }
             command::FILE_RANGE => {
                 debug!("got file range command");
-                file_range_command(ep_in, ep_out, game_paths, &progress_len_tx, &progress_tx)?
+                file_range_command(ep_in, ep_out, game_paths, &progress_len_tx, &progress_tx)?;
             }
             _ => bail!("invalid tinfoil command encountered!"),
         }

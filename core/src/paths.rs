@@ -22,9 +22,6 @@ pub fn read_game_paths(game_backup_path: &Path, recurse: bool) -> color_eyre::Re
         for entry_result in
             WalkDir::new(game_backup_path).max_depth(if recurse { usize::MAX } else { 1 })
         {
-            // if cancel.is_some_and(|c| c.load(Ordering::Relaxed)) {
-            //     return Ok(game_paths);
-            // }
             let Ok(entry) = entry_result else {
                 continue;
             };
@@ -44,7 +41,7 @@ pub fn read_game_paths(game_backup_path: &Path, recurse: bool) -> color_eyre::Re
             "Given path ({}) is neither a directory nor a valid game backup file",
             game_backup_path.display()
         )
-    };
+    }
 
     if game_paths.is_empty() {
         bail!(
