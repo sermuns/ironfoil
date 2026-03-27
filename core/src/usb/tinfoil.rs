@@ -83,7 +83,7 @@ pub fn file_range_command(
 
     let mut current_offset = 0;
     let end_offset = range_size;
-    let mut read_size = 0x100000;
+    let mut read_size = 0x0010_0000;
 
     let mut buf = vec![0u8; read_size];
 

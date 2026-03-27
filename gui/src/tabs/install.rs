@@ -19,7 +19,7 @@ use std::{
 use crate::tabs::{OngoingInstallation, Pick, StagedFiles, UsbProtocol, stage_picked};
 use crate::{app::add_toast, tabs::InstallType};
 
-#[allow(clippy::too_many_arguments)] // FIXME:
+#[allow(clippy::too_many_arguments, clippy::too_many_lines)] // FIXME:
 pub fn show(
     ui: &mut egui::Ui,
     theme: egui::Theme,
