@@ -1,6 +1,38 @@
 # Changelog
 
-## [0.3.0](https://github.com/sermuns/ironfoil/compare/v0.2.1..0.3.0) - 2026-03-26
+## [0.3.1](https://github.com/sermuns/ironfoil/compare/v0.3.0..0.3.1) - 2026-03-27
+
+### 🚀 Features
+
+- **(gui)** add linux desktop entry by @sermuns in [b99bafc](https://github.com/sermuns/ironfoil/commit/b99bafc4ec25e75bc565160b99eecdaf3bc7f55f)
+
+### 🐛 Bug Fixes
+
+- **(ci)** fix caching by @sermuns in [9054979](https://github.com/sermuns/ironfoil/commit/90549790783754341ff42b7dec911c25e0e6f429)
+
+### 🚜 Refactor
+
+- **(cli)** rename TransferType->InstallType by @sermuns in [a4d3c9e](https://github.com/sermuns/ironfoil/commit/a4d3c9e97ab48f8fce86d36a4d0eadb8ff3ce95e)
+- **(cli)** deduplicate usb/network install code by @sermuns in [742c090](https://github.com/sermuns/ironfoil/commit/742c0902a49663704eb779e57a946952b730bd98)
+- **(core)** break usb modules out into files by @sermuns in [ce5f5ec](https://github.com/sermuns/ironfoil/commit/ce5f5ecaebc9530f441144cdf267930a382fb5a1)
+- **(core)** use shared ref instead of owned Arc by @sermuns in [87b70c8](https://github.com/sermuns/ironfoil/commit/87b70c8eb12fa9736fba8da37d78d9c061821a09)
+- **(core)** satisfy some clippy lints by @sermuns in [9ae9b60](https://github.com/sermuns/ironfoil/commit/9ae9b60156b7a0ff60a804d4c9158be69ea7ac0a)
+- **(gui)** move ugly code into impl StagedFiles by @sermuns in [fbf5c9d](https://github.com/sermuns/ironfoil/commit/fbf5c9ddf7c2a681c7f8444be351d8d0dc1dfb9c)
+- **(gui)** satisfy lints by @sermuns in [e4989a8](https://github.com/sermuns/ironfoil/commit/e4989a86af10bf6257ffeed9705ea2c78f3ed3fc)
+- consolidate progress events as an enum. fix bug where checking target ip during usb install.. by @sermuns in [6f078e5](https://github.com/sermuns/ironfoil/commit/6f078e548f9fec3ce6239455eac80498eb04a9ad)
+
+### ⚙️ Miscellaneous Tasks
+
+- **(cli)** color-eyre, only show source on debug by @sermuns in [e3ac7f3](https://github.com/sermuns/ironfoil/commit/e3ac7f35cea7b88b01927596a4cfe0e570106007)
+- **(core)** fix needless_borrow by @sermuns in [9c7334e](https://github.com/sermuns/ironfoil/commit/9c7334e7373587f738cc743dfb4f23e822866c2d)
+- **(gui)** remove unused imports by @sermuns in [f4fece0](https://github.com/sermuns/ironfoil/commit/f4fece04776dd9a889910f882df54c6a93057b8e)
+- **(gui)** only enable eframe wayland,x11 on linux by @sermuns in [9cc4f47](https://github.com/sermuns/ironfoil/commit/9cc4f4780a653240f81907ef751b2d16f5e7acb1)
+- remove incorrect comment by @sermuns in [605d510](https://github.com/sermuns/ironfoil/commit/605d5104b5c48f59df3aa376b331be0524b99322)
+- add cargo fmt precommit by @sermuns in [360e2df](https://github.com/sermuns/ironfoil/commit/360e2df4222d2f017c9cec87f2790e2502da4e9e)
+- add pedantic clippy linting by @sermuns in [4aa637f](https://github.com/sermuns/ironfoil/commit/4aa637f676478e396f247abf7648f691395ee6b6)
+- allow override version in release just recipe by @sermuns in [885e160](https://github.com/sermuns/ironfoil/commit/885e160cc20becdf33895a5bcc84a0fdecee9ec1)
+- release v0.3.1 by Samuel Åkesson in [6bcf48b](https://github.com/sermuns/ironfoil/commit/6bcf48b0854bbbc4a04405dac983acb54d23c90e)
+## [v0.3.0](https://github.com/sermuns/ironfoil/compare/v0.2.1..v0.3.0) - 2026-03-26
 
 ### 🚀 Features
 
@@ -19,7 +51,7 @@
 
 ### ⚙️ Miscellaneous Tasks
 
-- release v0.3.0 by Samuel Åkesson in [04cccae](https://github.com/sermuns/ironfoil/commit/04cccae3664e0f1be34dfbff2a94972fe10a4c5d)
+- release v0.3.0 by @sermuns in [49c31ad](https://github.com/sermuns/ironfoil/commit/49c31adb80d373b857b541d18785ec7516e15770)
 ## [v0.2.1](https://github.com/sermuns/ironfoil/compare/v0.2.0..v0.2.1) - 2026-03-26
 
 ### 🚀 Features
