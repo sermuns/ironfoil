@@ -262,7 +262,7 @@ fn start_install(
         InstallType::Usb { protocol } => {
             let for_sphaira = matches!(protocol, UsbProtocol::Sphaira);
             std::thread::spawn(move || {
-                perform_usb_install(&game_paths, progress_tx, for_sphaira, cancel_thread)
+                perform_usb_install(&game_paths, progress_tx, for_sphaira, Some(&cancel_thread))
             })
         }
         InstallType::Network => {

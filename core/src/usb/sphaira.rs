@@ -8,10 +8,7 @@ use std::{
     fs::File,
     io::{BufReader, Read, Seek, SeekFrom},
     path::{Path, PathBuf},
-    sync::{
-        Arc,
-        atomic::{AtomicBool, Ordering},
-    },
+    sync::atomic::{AtomicBool, Ordering},
 };
 use thiserror::Error;
 
@@ -32,7 +29,6 @@ mod command {
 }
 
 const FLAG_NONE: u32 = 0;
-
 #[allow(unused)]
 const FLAG_STREAM: u32 = 1;
 
@@ -197,9 +193,9 @@ fn transfer_single_file(
 
     let _ = progress_tx.send(InstallProgressEvent::TotalLengthBytes(file_size));
 
-    let size_lsb = file_size as u32;
-    let size_msb = u32::from((file_size >> 32) as u16) | (flags << 16);
-    send_result(ep_out, RESULT_OK, size_msb, size_lsb)?;
+    let size_low_bits = file_size as u32;
+    let size_high_bits = u32::from((file_size >> 32) as u16) | (flags << 16);
+    send_result(ep_out, RESULT_OK, size_high_bits, size_low_bits)?;
 
     let file = File::open(game_path)?;
     let file_reader = BufReader::new(file);
@@ -211,7 +207,7 @@ fn transfer_single_file(
 pub fn do_workloop(
     ep_in: &mut Endpoint<Bulk, In>,
     ep_out: &mut Endpoint<Bulk, Out>,
-    cancel: Option<Arc<AtomicBool>>,
+    cancel: Option<&AtomicBool>,
     game_paths: &[PathBuf],
     progress_tx: InstallProgressSender,
 ) -> color_eyre::Result<()> {
@@ -243,15 +239,7 @@ pub fn do_workloop(
                             game_paths.len()
                         )
                     )?;
-                transfer_single_file(
-                    ep_in,
-                    ep_out,
-                    // FIXME: fucked up!!! avoid Arc nonsense within this file!
-                    cancel.as_ref().map(AsRef::as_ref),
-                    game_path,
-                    // FIXME: fucked up!!! refernence of Sender!?
-                    &progress_tx,
-                )?;
+                transfer_single_file(ep_in, ep_out, cancel, game_path, &progress_tx)?;
             }
             _ => {
                 send_result(ep_out, RESULT_ERROR, None, None)?;

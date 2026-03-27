@@ -4,11 +4,7 @@ use nusb::{
     Endpoint, MaybeFuture, list_devices,
     transfer::{Buffer, Bulk, In, Out, TransferError},
 };
-use std::{
-    path::PathBuf,
-    sync::{Arc, atomic::AtomicBool},
-    time::Duration,
-};
+use std::{path::PathBuf, sync::atomic::AtomicBool, time::Duration};
 
 use crate::InstallProgressSender;
 
@@ -21,9 +17,8 @@ pub fn perform_usb_install(
     game_paths: &[PathBuf],
     progress_tx: InstallProgressSender,
     for_sphaira: bool,
-    cancel: impl Into<Option<Arc<AtomicBool>>>,
+    cancel: Option<&AtomicBool>,
 ) -> color_eyre::Result<()> {
-    let cancel = cancel.into();
     let paths_with_newlines_string_length: u32 = game_paths
         .iter()
         .map(|path| path.to_str().unwrap().len() as u32 + 1)

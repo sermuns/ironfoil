@@ -8,10 +8,7 @@ use std::{
     fs::File,
     io::{BufReader, Read, Seek, SeekFrom},
     path::PathBuf,
-    sync::{
-        Arc,
-        atomic::{AtomicBool, Ordering},
-    },
+    sync::atomic::{AtomicBool, Ordering},
     time::Duration,
 };
 
@@ -112,7 +109,7 @@ pub fn file_range_command(
 pub fn do_workloop(
     ep_in: &mut Endpoint<Bulk, In>,
     ep_out: &mut Endpoint<Bulk, Out>,
-    cancel: Option<Arc<AtomicBool>>,
+    cancel: Option<&AtomicBool>,
     game_paths: &[PathBuf],
     progress_tx: InstallProgressSender,
 ) -> color_eyre::Result<()> {
