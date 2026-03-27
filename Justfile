@@ -1,7 +1,12 @@
-release:
+release force-version="":
 	#!/bin/sh
-	# RUSTFLAGS="-D warnings" cargo build --release
-	VERSION=$(git cliff --bumped-version | cut -d'v' -f2)
+	set -e
+
+	if [ -n "{{force-version}}" ]; then
+		VERSION="{{force-version}}"
+	else
+		VERSION=$(git cliff --bumped-version | cut -d'v' -f2)
+	fi
 	cargo release -x $VERSION
 	git cliff -o CHANGELOG.md --tag $VERSION
 	git add CHANGELOG.md
