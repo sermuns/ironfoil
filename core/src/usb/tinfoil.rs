@@ -118,7 +118,7 @@ pub fn file_range_command(
     let mut remaining_bytes_in_file = range_size;
     let mut current_file_offset_bytes = range_offset;
 
-    let mut send_buf = [0u8; 2 ^ 20];
+    let mut send_buf = [0u8; 2usize.pow(14)];
 
     while remaining_bytes_in_file > 0 {
         let chunk_size = remaining_bytes_in_file.min(send_buf.len());
