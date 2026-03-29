@@ -29,6 +29,7 @@ missing_errors_doc = "allow"
 missing_panics_doc = "allow"
 needless_pass_by_value = "allow"
 cast_precision_loss = "allow"
+too_many_arguments = "allow"
 
 [profile.release]
 opt-level = 3
