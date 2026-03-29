@@ -2,7 +2,7 @@ use color_eyre::Section;
 use color_eyre::eyre::Context;
 use log::{debug, error, info};
 use percent_encoding::{AsciiSet, CONTROLS, percent_decode_str, utf8_percent_encode};
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::thread::{self, sleep};
@@ -13,6 +13,7 @@ use std::{
     time::Duration,
 };
 
+use crate::progress::InstallEndGuard;
 use crate::{InstallProgressEvent, InstallProgressSender};
 
 // TODO: listen to random high-range port instead, it really doesn't matter!
@@ -31,18 +32,18 @@ fn serve_http(
     run_http_server: &AtomicBool,
     progress_tx: InstallProgressSender,
 ) -> color_eyre::Result<()> {
-    let listener = TcpListener::bind((host_ip, HOST_HTTP_PORT))
-        .wrap_err_with(|| {
-            format!(
-                "Unable to bind HTTP server to host IP and port ({}:{}).",
-                host_ip, HOST_HTTP_PORT
-            )
-        })
-        .suggestion(
-            "Ensure no other process is using the same port, and that the host IP seems correct.",
-        )?;
+    let _ended_guard = InstallEndGuard { tx: &progress_tx };
+    let listener = TcpListener::bind((host_ip, HOST_HTTP_PORT)).wrap_err_with(|| {
+        format!(
+            "Unable to bind HTTP server to host IP and port ({}:{}).",
+            host_ip, HOST_HTTP_PORT
+        )
+    })?;
     listener.set_nonblocking(true)?;
-    info!("sucesfulyl started http server");
+
+    info!("started http server");
+
+    let mut all_files_offset_bytes = 0;
 
     while run_http_server.load(Ordering::Relaxed) {
         let (mut stream, _addr) = match listener.accept() {
@@ -69,7 +70,7 @@ fn serve_http(
             deny_request(&mut stream);
             continue;
         };
-        println!("Requested '{}'", requested_game_path);
+        info!("Requested '{}'", requested_game_path);
         if parts.next().is_none_or(|part| part != "HTTP/1.1") {
             error!("invalid HTTP request start line: {}", start_line);
             deny_request(&mut stream);
@@ -87,11 +88,19 @@ fn serve_http(
             continue;
         }
 
+        let _ = progress_tx.send(InstallProgressEvent::CurrentFileName(
+            Path::new(requested_game_path.as_ref())
+                .file_name()
+                .unwrap()
+                .to_string_lossy()
+                .to_string(),
+        ));
+
         let game_size = std::fs::metadata(requested_game_path.as_ref())
             .unwrap()
             .len();
 
-        let _ = progress_tx.send(InstallProgressEvent::AllFilesLengthBytes(game_size));
+        let _ = progress_tx.send(InstallProgressEvent::CurrentFileLengthBytes(game_size));
 
         match method {
             "GET" => {
@@ -99,26 +108,54 @@ fn serve_http(
                 let range_line = lines.find(|line| line.starts_with("Range: ")).unwrap();
                 const RANGE_PREFIX: usize = "Range: bytes=".len();
                 let mut range_parts = range_line[RANGE_PREFIX..].split('-');
+
                 let range_start: u64 = range_parts.next().unwrap().parse().unwrap();
                 let range_end: u64 = range_parts.next().unwrap().parse().unwrap();
                 let range_length = range_end - range_start + 1;
 
-                let _ = progress_tx.send(InstallProgressEvent::AllFilesOffsetBytes(range_start));
+                let file = File::open(requested_game_path.as_ref()).unwrap();
+                let mut file_reader = BufReader::new(file);
+                file_reader.seek(SeekFrom::Start(range_start)).unwrap();
 
-                let mut file = File::open(requested_game_path.as_ref()).unwrap();
-                file.seek(SeekFrom::Start(range_start)).unwrap();
-                let mut buf = vec![0u8; range_length as usize];
-                file.read_exact(&mut buf).unwrap();
+                let mut current_file_offset_bytes = range_start;
+                let mut remaining_bytes_in_file = range_length as usize;
+                let mut send_buf = [0u8; 2usize.pow(14)];
 
-                respond_to_request(
-                    &mut stream,
-                    [
-                    format!(
-                        "HTTP/1.1 206 Partial Content\r\nAccept-Ranges: bytes\r\nContent-Range: bytes: {range_start}-{range_end}/{game_size}\r\nContent-Length: {range_length}\r\n\r\n",
-                    ).as_bytes(),
-                    &buf,
-                ].concat()
-                );
+                write!(
+                    stream,
+                    "HTTP/1.1 206 Partial Content\r\nAccept-Ranges: bytes\r\nContent-Range: bytes: {}-{} / {}\r\nContent-Length: {}\r\n\r\n",
+                    range_start, range_end, game_size, range_length
+                )?;
+                // stream.write_all(b"HTTP/1.1 206 Partial Content\r\nAccept-Ranges: bytes\r\nContent-Range: bytes: {range_start}-{range_end}/{game_size}\r\nContent-Length: {range_length}\r\n\r\n")?;
+                while remaining_bytes_in_file > 0 {
+                    let chunk_size = remaining_bytes_in_file.min(send_buf.len());
+                    let chunk = &mut send_buf[..chunk_size];
+
+                    file_reader.read_exact(chunk)?;
+                    stream.write_all(chunk)?;
+
+                    remaining_bytes_in_file -= chunk_size;
+
+                    current_file_offset_bytes += chunk_size as u64;
+                    let _ = progress_tx.send(InstallProgressEvent::CurrentFileOffsetBytes(
+                        current_file_offset_bytes,
+                    ));
+
+                    all_files_offset_bytes += chunk_size as u64;
+                    let _ = progress_tx.send(InstallProgressEvent::AllFilesOffsetBytes(
+                        all_files_offset_bytes,
+                    ));
+                }
+                stream.flush()?;
+                // respond_to_request(
+                //     &mut stream,
+                //     [
+                //     format!(
+                //         "HTTP/1.1 206 Partial Content\r\nAccept-Ranges: bytes\r\nContent-Range: bytes: {range_start}-{range_end}/{game_size}\r\nContent-Length: {range_length}\r\n\r\n",
+                //     ).as_bytes(),
+                //     &buf,
+                // ].concat()
+                // );
             }
             "HEAD" => {
                 debug!("got HEAD");
@@ -145,7 +182,7 @@ pub fn perform_tinfoil_network_install(
     progress_tx: InstallProgressSender,
     cancel: Option<Arc<AtomicBool>>,
 ) -> color_eyre::Result<()> {
-    println!("Performing network install to {}", target_ip);
+    info!("Performing network install to {}", target_ip);
 
     let mut keepalive_stream = TcpStream::connect((target_ip, 2000)).wrap_err_with(|| format!("Target device at {target_ip} (hopefully Nintendo Switch!?) is refusing connections"))
         .suggestion("Ensure the Nintendo Switch is awake and in Awoo Installer 'Install Over LAN or internet'")
@@ -162,6 +199,14 @@ pub fn perform_tinfoil_network_install(
         acc + &base_url + &urlencode(path.to_str().unwrap()) + "\n"
     });
 
+    let all_files_length_bytes = game_paths
+        .iter()
+        .map(|path| path.metadata().unwrap().len())
+        .sum::<u64>();
+    let _ = progress_tx.send(InstallProgressEvent::AllFilesLengthBytes(
+        all_files_length_bytes,
+    ));
+
     let run_http_server = Arc::new(AtomicBool::new(true));
     let run_http_server_thread = Arc::clone(&run_http_server);
     let http_thread = thread::spawn(move || {
@@ -172,7 +217,7 @@ pub fn perform_tinfoil_network_install(
             progress_tx,
         )
     });
-    debug!("Spawned HTTP thread");
+    info!("spawned HTTP thread");
 
     keepalive_stream.write_all(
         &[
@@ -182,7 +227,7 @@ pub fn perform_tinfoil_network_install(
         .concat(),
     )?;
 
-    debug!("Sent initiating data {}", &urls_with_newlines);
+    debug!("sent initiating data {}", &urls_with_newlines);
 
     let mut keepalive_buf = Vec::new();
     loop {

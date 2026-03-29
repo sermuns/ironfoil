@@ -17,3 +17,12 @@ pub enum InstallProgressEvent {
 }
 pub type InstallProgressSender = mpsc::Sender<InstallProgressEvent>;
 pub type InstallProgressReceiver = mpsc::Receiver<InstallProgressEvent>;
+
+pub struct InstallEndGuard<'a> {
+    pub tx: &'a InstallProgressSender,
+}
+impl Drop for InstallEndGuard<'_> {
+    fn drop(&mut self) {
+        let _ = self.tx.send(InstallProgressEvent::Ended);
+    }
+}

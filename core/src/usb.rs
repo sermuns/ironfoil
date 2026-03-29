@@ -7,7 +7,7 @@ use nusb::{
 use serde::{Deserialize, Serialize};
 use std::{path::PathBuf, sync::atomic::AtomicBool, time::Duration};
 
-use crate::{InstallProgressEvent, InstallProgressSender};
+use crate::{InstallProgressEvent, InstallProgressSender, progress::InstallEndGuard};
 
 mod sphaira;
 mod tinfoil;
@@ -19,22 +19,13 @@ pub enum UsbProtocol {
     Sphaira,
 }
 
-struct UsbInstallEndedGuard<'a> {
-    tx: &'a InstallProgressSender,
-}
-impl Drop for UsbInstallEndedGuard<'_> {
-    fn drop(&mut self) {
-        let _ = self.tx.send(InstallProgressEvent::Ended);
-    }
-}
-
 pub fn perform_usb_install(
     game_paths: &[PathBuf],
     progress_tx: InstallProgressSender,
     usb_protocol: UsbProtocol,
     cancel: Option<&AtomicBool>,
 ) -> color_eyre::Result<()> {
-    let _ended_guard = UsbInstallEndedGuard { tx: &progress_tx };
+    let _ended_guard = InstallEndGuard { tx: &progress_tx };
     let device_info = list_devices()
         .wait()?
         .find(|dev| dev.vendor_id() == 0x57e && dev.product_id() == 0x3000)
