@@ -26,6 +26,7 @@ fn urlencode(input: &str) -> String {
     utf8_percent_encode(input, FRAGMENT_PERCENT_ENCODE_SET).to_string()
 }
 
+#[allow(clippy::too_many_lines)]
 fn serve_http(
     game_paths: &[PathBuf],
     host_ip: IpAddr,
@@ -126,7 +127,6 @@ fn serve_http(
                     "HTTP/1.1 206 Partial Content\r\nAccept-Ranges: bytes\r\nContent-Range: bytes: {}-{} / {}\r\nContent-Length: {}\r\n\r\n",
                     range_start, range_end, game_size, range_length
                 )?;
-                // stream.write_all(b"HTTP/1.1 206 Partial Content\r\nAccept-Ranges: bytes\r\nContent-Range: bytes: {range_start}-{range_end}/{game_size}\r\nContent-Length: {range_length}\r\n\r\n")?;
                 while remaining_bytes_in_file > 0 {
                     let chunk_size = remaining_bytes_in_file.min(send_buf.len());
                     let chunk = &mut send_buf[..chunk_size];
@@ -147,15 +147,6 @@ fn serve_http(
                     ));
                 }
                 stream.flush()?;
-                // respond_to_request(
-                //     &mut stream,
-                //     [
-                //     format!(
-                //         "HTTP/1.1 206 Partial Content\r\nAccept-Ranges: bytes\r\nContent-Range: bytes: {range_start}-{range_end}/{game_size}\r\nContent-Length: {range_length}\r\n\r\n",
-                //     ).as_bytes(),
-                //     &buf,
-                // ].concat()
-                // );
             }
             "HEAD" => {
                 debug!("got HEAD");
