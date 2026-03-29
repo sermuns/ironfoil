@@ -11,11 +11,21 @@ authors.workspace = true
 workspace = true
 
 [dependencies]
-log.workspace = true
-nusb = "0.2"
-thiserror = "1"
-percent-encoding = "2.3"
 color-eyre.workspace = true
+log.workspace = true
+thiserror = "1"
 walkdir = "2"
-crc32c = "0.6"
-serde.workspace = true
+
+# network
+percent-encoding = { version = "2.3", optional = true }
+
+# usb
+crc32c = { version = "0.6", optional = true }
+nusb = { version = "0.2", optional = true }
+serde = { workspace = true, optional = true }
+
+[features]
+default = ["network", "rcm", "usb"]
+network = ["dep:percent-encoding"]
+rcm = ["dep:nusb"]
+usb = ["dep:crc32c", "dep:nusb", "dep:serde"]

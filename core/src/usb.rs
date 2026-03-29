@@ -4,12 +4,20 @@ use nusb::{
     MaybeFuture, list_devices,
     transfer::{Bulk, In, Out},
 };
+use serde::{Deserialize, Serialize};
 use std::{path::PathBuf, sync::atomic::AtomicBool, time::Duration};
 
-use crate::{InstallProgressEvent, InstallProgressSender, UsbProtocol};
+use crate::{InstallProgressEvent, InstallProgressSender};
 
 mod sphaira;
 mod tinfoil;
+
+#[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize, Default)]
+pub enum UsbProtocol {
+    #[default]
+    TinFoil,
+    Sphaira,
+}
 
 struct UsbInstallEndedGuard<'a> {
     tx: &'a InstallProgressSender,
