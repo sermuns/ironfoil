@@ -1,6 +1,26 @@
 # Changelog
 
-## [0.4.0](https://github.com/sermuns/ironfoil/compare/v0.3.1..0.4.0) - 2026-03-29
+## [0.4.1](https://github.com/sermuns/ironfoil/compare/v0.4.0..0.4.1) - 2026-03-29
+
+### 🐛 Bug Fixes
+
+- **(core)** actually perform 2 to the power of.. ^ means xor... by @sermuns in [13461c4](https://github.com/sermuns/ironfoil/commit/13461c4abca38e82e4f5aa0791a4e23a53b28687)
+- **(core)** correct progress report for network install by @sermuns in [3019235](https://github.com/sermuns/ironfoil/commit/3019235d99756896180f6f1185ab43e2ade3fb02)
+
+### 🚜 Refactor
+
+- **(core)** create crate features by @sermuns in [0868f25](https://github.com/sermuns/ironfoil/commit/0868f25a53b0fc6fb7f60068cf3cbbeb2c1ddf75)
+
+### 📚 Documentation
+
+- **(cli)** show more of help output by @sermuns in [b513224](https://github.com/sermuns/ironfoil/commit/b51322461fd7e50819ae2a87f3c14bbfff8cf008)
+
+### ⚙️ Miscellaneous Tasks
+
+- **(core)** remove unused crc32fast by @sermuns in [78d9512](https://github.com/sermuns/ironfoil/commit/78d9512cac0fa590b9b281eb6113e161867283b8)
+- **(core)** allow too many lines in `serve_http`... by @sermuns in [c5e517d](https://github.com/sermuns/ironfoil/commit/c5e517d4f798f80fe5a88d50b3eac0ba4da8f216)
+- release v0.4.1 by Samuel Åkesson in [712191c](https://github.com/sermuns/ironfoil/commit/712191cd09b24368056fbe676e2462750ea7ed49)
+## [v0.4.0](https://github.com/sermuns/ironfoil/compare/v0.3.1..v0.4.0) - 2026-03-29
 
 ### 🚀 Features
 
@@ -32,7 +52,7 @@
 
 - **(gui)** minor error reword by @sermuns in [b4452e8](https://github.com/sermuns/ironfoil/commit/b4452e8cf8bad06097f5689870d1286084ab4b76)
 - satisfy/configure clippy by @sermuns in [0fd126f](https://github.com/sermuns/ironfoil/commit/0fd126f5a7a4d567f15441649bd56974c130304a)
-- release v0.4.0 by Samuel Åkesson in [b3bbc21](https://github.com/sermuns/ironfoil/commit/b3bbc2128047d83133b7cbd296b33340fa93e1d5)
+- release v0.4.0 by @sermuns in [9e15353](https://github.com/sermuns/ironfoil/commit/9e15353fe11cc1c508e7035969c16da07dab5359)
 ## [v0.3.1](https://github.com/sermuns/ironfoil/compare/v0.3.0..v0.3.1) - 2026-03-27
 
 ### 🚀 Features

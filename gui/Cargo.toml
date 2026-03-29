@@ -28,7 +28,7 @@ egui = "0.33"
 egui_extras = { version = "0.33", features = ["svg"] }
 egui-toast = "0.19"
 env_logger.workspace = true
-ironfoil-core = { path = "../core", version = "0.4.0" }
+ironfoil-core = { path = "../core", version = "0.4.1" }
 log.workspace = true
 serde.workspace = true
 strum = { version = "0.28", features = ["derive"] }
