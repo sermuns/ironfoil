@@ -5,6 +5,7 @@ use egui_toast::ToastOptions;
 use egui_toast::Toasts;
 use serde::{Deserialize, Serialize};
 use std::net::Ipv4Addr;
+use std::time::Duration;
 use strum::IntoEnumIterator;
 
 use crate::tabs::Tab;
@@ -120,7 +121,7 @@ impl eframe::App for App {
             self.toasts.show(ctx);
         });
 
-        ctx.request_repaint(); // FIXME: unneccessaryily continous.
+        ctx.request_repaint_after(Duration::from_millis(100));
     }
 
     fn save(&mut self, storage: &mut dyn eframe::Storage) {
