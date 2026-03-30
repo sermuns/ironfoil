@@ -49,19 +49,19 @@ pub fn file_range_command(
     usb_reader: &mut impl Read,
     usb_writer: &mut impl Write,
     buf: &mut [u8],
+    command_header: &mut [u8; 32],
     cached_game_file: &mut Option<CachedGameFile>,
     game_paths: &[PathBuf],
     progress_tx: &InstallProgressSender,
     all_files_offset_bytes: &mut u64,
 ) -> color_eyre::Result<()> {
-    let mut file_range_header = [0u8; 32];
-    usb_reader.read_exact(&mut file_range_header)?;
+    usb_reader.read_exact(command_header)?;
 
-    debug!("got file range header: {:#?}", &file_range_header);
+    debug!("got file range header: {:#?}", &command_header);
 
-    let range_size = usize::from_le_bytes(file_range_header[..8].try_into().unwrap());
-    let range_offset = u64::from_le_bytes(file_range_header[8..16].try_into().unwrap());
-    let game_path_utf8_len = usize::from_le_bytes(file_range_header[16..24].try_into().unwrap());
+    let range_size = usize::from_le_bytes(command_header[..8].try_into().unwrap());
+    let range_offset = u64::from_le_bytes(command_header[8..16].try_into().unwrap());
+    let game_path_utf8_len = usize::from_le_bytes(command_header[16..24].try_into().unwrap());
     info!("got game path utf8 len: {}", game_path_utf8_len);
 
     let num_bytes_in_game_path = usb_reader.read(buf)?;
@@ -151,7 +151,7 @@ pub fn do_workloop(
     game_paths: &[PathBuf],
     progress_tx: &InstallProgressSender,
 ) -> color_eyre::Result<()> {
-    let mut command_header = [0u8; 0x20];
+    let mut command_header = [0u8; 32];
     let mut read_buf = [0u8; 512];
     let mut stored_game_file = None;
     let mut all_files_offset_bytes = 0;
@@ -193,6 +193,7 @@ pub fn do_workloop(
                     &mut usb_reader,
                     &mut usb_writer,
                     &mut read_buf,
+                    &mut command_header,
                     &mut stored_game_file,
                     game_paths,
                     progress_tx,
