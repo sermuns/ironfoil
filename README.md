@@ -43,7 +43,23 @@ and also:
 
 ### Installing the GUI (`ironfoil-gui`)
 
-...
+Download the latest archive for your OS and extract to any location of your choice.
+
+<div align=center>
+
+<a href="https://github.com/sermuns/ironfoil/releases/latest/download/ironfoil-gui-x86_64-unknown-linux-gnu.tar.xz">
+  <img src="media/download-linux.svg" width=200>
+</a>
+
+<a href="https://github.com/sermuns/ironfoil/releases/latest/download/ironfoil-gui-x86_64-pc-windows-msvc.zip">
+  <img src="media/download-windows.svg" width=200>
+</a>
+
+<a href="https://github.com/sermuns/ironfoil/releases/latest/download/ironfoil-gui-x86_64-apple-darwin.tar.xz">
+  <img src="media/download-macos.svg" width=200>
+</a>
+
+</div>
 
 ### Installing the CLI (`ironfoil`)
 

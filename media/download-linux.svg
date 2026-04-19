@@ -1,0 +1,38 @@
+<svg class="typst-doc" viewBox="0 0 66 16.5" width="66pt" height="16.5pt" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:h5="http://www.w3.org/1999/xhtml">
+    <g>
+        <g class="typst-group">
+            <g>
+                <path class="typst-shape" fill="#002e57d9" fill-rule="nonzero" d="M 0 0m 0 2.2 c 0 -1.2150265 0.98497355 -2.2 2.2 -2.2 h 61.6 c 1.2150307 0 2.2000008 0.98497355 2.2000008 2.2 v 12.1 c 0 1.2150259 -0.9849701 2.1999998 -2.2000008 2.1999998 h -61.6 c -1.2150265 0 -2.2 -0.9849739 -2.2 -2.1999998 Z "/>
+                <g class="typst-group">
+                    <g>
+                        <image transform="matrix(1 0 0 1 14.998500000000002 2.75)" xlink:href="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz48IS0tIFVwbG9hZGVkIHRvOiBTVkcgUmVwbywgd3d3LnN2Z3JlcG8uY29tLCBHZW5lcmF0b3I6IFNWRyBSZXBvIE1peGVyIFRvb2xzIC0tPg0KPHN2ZyB3aWR0aD0iODAwcHgiIGhlaWdodD0iODAwcHgiIHZpZXdCb3g9IjAgMCAyNCAyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4NCiAgPHRpdGxlPmxpbnV4PC90aXRsZT4NCiAgPHJlY3Qgd2lkdGg9IjI0IiBoZWlnaHQ9IjI0IiBmaWxsPSJub25lIi8+DQogIDxwYXRoIGZpbGw9IiNmZmZmZmYiIGQ9Ik0xNC42Miw4LjM1Yy0uNDIuMjgtMS43NSwxLTEuOTUsMS4xOWEuODIuODIsMCwwLDEtMS4xNCwwYy0uMi0uMTYtMS41My0uOTItMS45NS0xLjE5cy0uNDUtLjcuMDgtLjkyYTYuMTYsNi4xNiwwLDAsMSw0LjkxLDBjLjQ5LjIxLjUxLjYsMCwuOW03LjIyLDcuMjhBMTkuMDksMTkuMDksMCwwLDAsMTgsMTBhNC4zMSw0LjMxLDAsMCwxLTEuMDYtMS44OGMtLjEtLjMzLS4xNy0uNjctLjI0LTFBMTEuMzIsMTEuMzIsMCwwLDAsMTYsNC40Nyw0LjA2LDQuMDYsMCwwLDAsMTIuMTYsMiw0LjIsNC4yLDAsMCwwLDguMjEsNC40YTUuOSw1LjksMCwwLDAtLjQ2LDEuMzRjLS4xNy43Ni0uMzIsMS41NS0uNSwyLjMyYTMuMzgsMy4zOCwwLDAsMS0xLDEuNzEsMTkuNTMsMTkuNTMsMCwwLDAtMy44OCw1LjM1QTYuMDksNi4wOSwwLDAsMCwyLDE2Yy0uMTkuNjYuMjksMS4xMiwxLDEsLjQ0LS4wOS44OC0uMTgsMS4zLS4zMXMuNTcsMCwuNjcuMzVhNi43Myw2LjczLDAsMCwwLDQuMjQsNC41YzQuMTIsMS41Niw4LjkzLS42NiwxMC00LjU4LjA3LS4yNy4xNy0uMzcuNDctLjI3LjQ2LjE0LjkzLjI0LDEuNC4zNWEuNzIuNzIsMCwwLDAsLjkyLS42NCwxLjQ0LDEuNDQsMCwwLDAtLjE2LS43MyIvPg0KPC9zdmc+DQo=" width="11" height="11" preserveAspectRatio="none"/>
+                        <g class="typst-text" transform="matrix(1 0 0 -1 29.2985 12.006499999999999)">
+                            <use xlink:href="#g9E7E89D1DA3DD6EF936B9BC9E563579E" x="0" y="0" fill="#ffffff" fill-rule="nonzero"/>
+                            <use xlink:href="#gAC2932620C3F855AD4BE5285A5821945" x="2.629" y="0" fill="#ffffff" fill-rule="nonzero"/>
+                            <use xlink:href="#g4BF22B6AB73E25B39BE1FD55C667F0AC" x="5.258" y="0" fill="#ffffff" fill-rule="nonzero"/>
+                            <use xlink:href="#gD4545E01BD9596E1AE486501569D0424" x="10.945" y="0" fill="#ffffff" fill-rule="nonzero"/>
+                            <use xlink:href="#gE26AF3D348C725233CDF475EB58557BC" x="16.632" y="0" fill="#ffffff" fill-rule="nonzero"/>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+    <defs id="glyph">
+        <symbol id="g9E7E89D1DA3DD6EF936B9BC9E563579E" overflow="visible">
+            <path d="M 0 0m 1.716 0 v 7.634 h -0.825 v -7.634 Z "/>
+        </symbol>
+        <symbol id="gAC2932620C3F855AD4BE5285A5821945" overflow="visible">
+            <path d="M 0 0m 1.716 0 v 4.884 h -0.825 v -4.884 Z m 0.08800006 6.226 v 0.9790001 h -0.97900003 v -0.9790001 Z "/>
+        </symbol>
+        <symbol id="g4BF22B6AB73E25B39BE1FD55C667F0AC" overflow="visible">
+            <path d="M 0 0m 4.785 0 v 3.2779999 c 0 0.7260003 -0.16499996 1.7270002 -1.507 1.7270002 c -0.9899998 0 -1.5289999 -0.74800014 -1.5949999 -0.83599997 v 0.78099966 h -0.792 v -4.95 h 0.858 v 2.695 c 0 0.7260001 0.27499998 1.6390002 1.111 1.6390002 c 1.056 0 1.0670002 -0.78100014 1.0670002 -1.1330001 v -3.201 Z "/>
+        </symbol>
+        <symbol id="gD4545E01BD9596E1AE486501569D0424" overflow="visible">
+            <path d="M 0 0m 4.785 0 v 4.884 h -0.8579998 v -3.1899998 c 0 -0.825 -0.6160002 -1.21 -1.3200002 -1.21 c -0.7809999 0 -0.8579999 0.28599998 -0.8579999 0.75900006 v 3.6409998 h -0.858 v -3.685 c 0 -0.792 0.25300008 -1.32 1.1659999 -1.32 c 0.58299994 0 1.3640001 0.176 1.9030001 0.649 v -0.528 Z "/>
+        </symbol>
+        <symbol id="gE26AF3D348C725233CDF475EB58557BC" overflow="visible">
+            <path d="M 0 0m 5.06 0 l -2.2 2.519 l 2.0130002 2.3649998 h -0.9020002 l -1.474 -1.8149998 l -1.518 1.8149998 h -0.913 l 2.068 -2.3649998 l -2.134 -2.519 h 0.902 l 1.595 2.068 l 1.6499999 -2.068 Z "/>
+        </symbol>
+    </defs>
+</svg>

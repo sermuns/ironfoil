@@ -26,3 +26,42 @@
     ),
   )
 }
+
+#let download-button(image-path, os-name) = {
+  set page(
+    width: auto,
+    height: auto,
+    margin: 0pt,
+    fill: none,
+  )
+
+  set text(
+    font: "New Computer Modern Sans",
+    top-edge: "bounds",
+    bottom-edge: "bounds",
+    fill: white,
+  )
+
+  set align(center + horizon)
+
+  box(
+    width: 6em,
+    height: 1.5em,
+    fill: blue.darken(60%).transparentize(15%),
+    radius: .2em,
+    stack(
+      dir: ltr,
+      spacing: .3em,
+      image(
+        bytes(
+          read(image-path).replace(
+            "#000000",
+            foreground-dark.to-hex(),
+          ),
+        ),
+        height: 1em,
+      ),
+      os-name,
+    ),
+  )
+}
