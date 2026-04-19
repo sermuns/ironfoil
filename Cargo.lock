@@ -1523,7 +1523,7 @@ dependencies = [
 
 [[package]]
 name = "ironfoil"
-version = "0.4.1"
+version = "0.4.2"
 dependencies = [
  "clap",
  "color-eyre",
@@ -1534,7 +1534,7 @@ dependencies = [
 
 [[package]]
 name = "ironfoil-core"
-version = "0.4.1"
+version = "0.4.2"
 dependencies = [
  "color-eyre",
  "crc32c",
@@ -1549,7 +1549,7 @@ dependencies = [
 
 [[package]]
 name = "ironfoil-gui"
-version = "0.4.1"
+version = "0.4.2"
 dependencies = [
  "color-eyre",
  "eframe",

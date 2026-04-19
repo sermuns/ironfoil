@@ -1,6 +1,30 @@
 # Changelog
 
-## [0.4.1](https://github.com/sermuns/ironfoil/compare/v0.4.0..0.4.1) - 2026-03-29
+## [0.4.2](https://github.com/sermuns/ironfoil/compare/v0.4.1..0.4.2) - 2026-04-19
+
+### 🐛 Bug Fixes
+
+- **(core)** i was an idiot yet again, using XOR instead of pow by @sermuns in [4797779](https://github.com/sermuns/ironfoil/commit/47977791c09107a482ca6005d38c0816e212158d)
+- **(core)** longer USB read timeout by @sermuns in [363d92e](https://github.com/sermuns/ironfoil/commit/363d92ecbc55fc642310b9f7d177cdbaf47ad14b)
+
+### 🚜 Refactor
+
+- **(core)** reuse command header buf for tinfoil usb install by @sermuns in [d1048b5](https://github.com/sermuns/ironfoil/commit/d1048b53c3f60256a91a00628e532a587ef24feb)
+- **(core)** inline usb constants by @sermuns in [c78a462](https://github.com/sermuns/ironfoil/commit/c78a4629f6e7896fac9e6f2fd6cd8246800ef998)
+
+### 🧪 Testing
+
+- **(core)** start adding tests by @sermuns in [8cabd18](https://github.com/sermuns/ironfoil/commit/8cabd18ec329fdda7bb9c8bc3efb56d8cf62f032)
+- **(core)** more tinfoil tests by @sermuns in [0826793](https://github.com/sermuns/ironfoil/commit/0826793920060f3aa0e1c43608336225975bac29)
+- **(core)** use usize::MAX by @sermuns in [e2f6414](https://github.com/sermuns/ironfoil/commit/e2f64146575346b01c05d918daba258d5702dbdb)
+- **(core)** start adding sphaira tests by @sermuns in [25dec25](https://github.com/sermuns/ironfoil/commit/25dec25764c174f26266678277ba0488d8c54022)
+- **(core)** add more sphaira test for bad cases by @sermuns in [f78482d](https://github.com/sermuns/ironfoil/commit/f78482d8ce91740c004894ff673e3c3f3f84612b)
+
+### ⚙️ Miscellaneous Tasks
+
+- **(core)** allow too many arguments... by @sermuns in [ea17c12](https://github.com/sermuns/ironfoil/commit/ea17c12de51f94c61f652f1768d1888d6c9e76f0)
+- release v0.4.2 by Samuel Åkesson in [96eeaf5](https://github.com/sermuns/ironfoil/commit/96eeaf5b083a4ea9721213c7a2f7ab352d1f9b9a)
+## [v0.4.1](https://github.com/sermuns/ironfoil/compare/v0.4.0..v0.4.1) - 2026-03-29
 
 ### 🐛 Bug Fixes
 
@@ -19,7 +43,7 @@
 
 - **(core)** remove unused crc32fast by @sermuns in [78d9512](https://github.com/sermuns/ironfoil/commit/78d9512cac0fa590b9b281eb6113e161867283b8)
 - **(core)** allow too many lines in `serve_http`... by @sermuns in [c5e517d](https://github.com/sermuns/ironfoil/commit/c5e517d4f798f80fe5a88d50b3eac0ba4da8f216)
-- release v0.4.1 by Samuel Åkesson in [712191c](https://github.com/sermuns/ironfoil/commit/712191cd09b24368056fbe676e2462750ea7ed49)
+- release v0.4.1 by @sermuns in [d02227e](https://github.com/sermuns/ironfoil/commit/d02227eb686c1f2f9c0cae596f72a59d1d5243f7)
 ## [v0.4.0](https://github.com/sermuns/ironfoil/compare/v0.3.1..v0.4.0) - 2026-03-29
 
 ### 🚀 Features
