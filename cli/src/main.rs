@@ -139,11 +139,12 @@ where
     );
 
     let game_paths = read_game_paths(game_backup_path, recurse)?;
-    let num_games_to_install = game_paths.len();
 
     let (progress_tx, progress_rx) = mpsc::channel::<InstallProgressEvent>();
 
     let install_thread = std::thread::spawn(move || install_closure(game_paths, progress_tx));
+
+    let mut num_games_installed = 0;
 
     loop {
         if let Ok(event) = progress_rx.recv() {
@@ -154,7 +155,10 @@ where
                 InstallProgressEvent::CurrentFileOffsetBytes(offset) => {
                     file_pb.set_position(offset);
                 }
-                InstallProgressEvent::CurrentFileName(name) => file_pb.set_message(name),
+                InstallProgressEvent::CurrentFileName(name) => {
+                    file_pb.set_message(name);
+                    num_games_installed += 1;
+                }
                 InstallProgressEvent::Ended => {
                     total_pb.finish();
                     file_pb.finish_and_clear();
@@ -171,8 +175,8 @@ where
 
     eprintln!(
         "Successfully installed {} game{}!",
-        num_games_to_install,
-        if num_games_to_install == 1 { "" } else { "s" }
+        num_games_installed,
+        if num_games_installed == 1 { "" } else { "s" }
     );
 
     Ok(())
