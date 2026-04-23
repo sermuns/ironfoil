@@ -1,6 +1,17 @@
 # Changelog
 
-## [0.4.2](https://github.com/sermuns/ironfoil/compare/v0.4.1..0.4.2) - 2026-04-19
+## [0.4.3](https://github.com/sermuns/ironfoil/compare/v0.4.2..0.4.3) - 2026-04-23
+
+### 📚 Documentation
+
+- add download buttons for ironfoil-gui by @sermuns in [dd15da8](https://github.com/sermuns/ironfoil/commit/dd15da826e1691bef3efbc5b1e85c6e4f9fcaa0c)
+- make download buttons prettier by @sermuns in [9e10145](https://github.com/sermuns/ironfoil/commit/9e101456b24df9ca76995b4ceea2744270aecab6)
+
+### ⚙️ Miscellaneous Tasks
+
+- don't strip release build by @sermuns in [4c0cfc0](https://github.com/sermuns/ironfoil/commit/4c0cfc02dfe880c8632e00889326fc8484fbb918)
+- release v0.4.3 by Samuel Åkesson in [0f03e08](https://github.com/sermuns/ironfoil/commit/0f03e08fa6bfeac148ce270dfae47114ba506da2)
+## [v0.4.2](https://github.com/sermuns/ironfoil/compare/v0.4.1..v0.4.2) - 2026-04-19
 
 ### 🐛 Bug Fixes
 
@@ -23,7 +34,7 @@
 ### ⚙️ Miscellaneous Tasks
 
 - **(core)** allow too many arguments... by @sermuns in [ea17c12](https://github.com/sermuns/ironfoil/commit/ea17c12de51f94c61f652f1768d1888d6c9e76f0)
-- release v0.4.2 by Samuel Åkesson in [96eeaf5](https://github.com/sermuns/ironfoil/commit/96eeaf5b083a4ea9721213c7a2f7ab352d1f9b9a)
+- release v0.4.2 by @sermuns in [d53ed3d](https://github.com/sermuns/ironfoil/commit/d53ed3db4766711324507de92d4a12e6146979d4)
 ## [v0.4.1](https://github.com/sermuns/ironfoil/compare/v0.4.0..v0.4.1) - 2026-03-29
 
 ### 🐛 Bug Fixes
