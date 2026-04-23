@@ -7,7 +7,8 @@ on:
       - "*"
 
 env:
-  CRATE_NAME: ironfoil
+  CLI_NAME: ironfoil
+  GUI_NAME: ironfoil-gui
 
 jobs:
   publish-github:
@@ -84,16 +85,8 @@ jobs:
               TOOLCHAIN: stable,
               TARGET: x86_64-pc-windows-msvc,
             }
-          - {
-              OS: macos-14,
-              TOOLCHAIN: stable,
-              TARGET: x86_64-apple-darwin,
-            }
-          - {
-              OS: macos-14,
-              TOOLCHAIN: stable,
-              TARGET: aarch64-apple-darwin,
-            }
+          - { OS: macos-14, TOOLCHAIN: stable, TARGET: x86_64-apple-darwin }
+          - { OS: macos-14, TOOLCHAIN: stable, TARGET: aarch64-apple-darwin }
     steps:
       - name: Checkout the repository
         uses: actions/checkout@v6
@@ -119,26 +112,27 @@ jobs:
       - name: Prepare release assets
         shell: bash
         run: |
-          mkdir -p release
+          mkdir -p ${{env.CLI_NAME}}-${{env.RELEASE_VERSION}} ${{env.GUI_NAME}}-${{env.RELEASE_VERSION}}
           cp {LICENSE-MIT,LICENSE-APACHE,README.md,CHANGELOG.md} release/
           if [ "${{ matrix.build.OS }}" = "windows-2022" ]; then
-            cp target/${{ matrix.build.TARGET }}/release/${{env.CRATE_NAME}}.exe release/
+            cp target/${{ matrix.build.TARGET }}/release/${{env.CLI_NAME}}.exe ${{env.CLI_NAME}}-${{env.RELEASE_VERSION}}/
+            cp target/${{ matrix.build.TARGET }}/release/${{env.GUI_NAME}}.exe ${{env.GUI_NAME}}-${{env.RELEASE_VERSION}}/
           else
-            cp target/${{ matrix.build.TARGET }}/release/${{env.CRATE_NAME}} release/
+            cp target/${{ matrix.build.TARGET }}/release/${{env.CLI_NAME}} ${{env.CLI_NAME}}-${{env.RELEASE_VERSION}}/
+            cp target/${{ matrix.build.TARGET }}/release/${{env.GUI_NAME}} ${{env.GUI_NAME}}-${{env.RELEASE_VERSION}}/
           fi
-          mv release/ ${{env.CRATE_NAME}}-${{env.RELEASE_VERSION}}/
 
       - name: Create release artifacts
         shell: bash
         run: |
           if [ "${{ matrix.build.OS }}" = "windows-2022" ]; then
-            7z a -tzip "${{env.CRATE_NAME}}-${{ matrix.build.TARGET }}.zip" \
-              ${{env.CRATE_NAME}}-${{ env.RELEASE_VERSION }}/
+            7z a -tzip "${{env.CLI_NAME}}-${{ matrix.build.TARGET }}.zip" ${{env.CLI_NAME}}-${{ env.RELEASE_VERSION }}/
+            7z a -tzip "${{env.GUI_NAME}}-${{ matrix.build.TARGET }}.zip" ${{env.GUI_NAME}}-${{ env.RELEASE_VERSION }}/
           else
-            tar -czvf ${{env.CRATE_NAME}}-${{ matrix.build.TARGET }}.tar.gz \
-              ${{env.CRATE_NAME}}-${{ env.RELEASE_VERSION }}/
-            shasum -a 512 ${{env.CRATE_NAME}}-${{ matrix.build.TARGET }}.tar.gz \
-              > ${{env.CRATE_NAME}}-${{ matrix.build.TARGET }}.tar.gz.sha512
+            tar -czvf ${{env.CLI_NAME}}-${{ matrix.build.TARGET }}.tar.gz ${{env.CLI_NAME}}-${{ env.RELEASE_VERSION }}/
+            shasum -a 512 ${{env.CLI_NAME}}-${{ matrix.build.TARGET }}.tar.gz > ${{env.CLI_NAME}}-${{ matrix.build.TARGET }}.tar.gz.sha512
+            tar -czvf ${{env.GUI_NAME}}-${{ matrix.build.TARGET }}.tar.gz ${{env.GUI_NAME}}-${{ env.RELEASE_VERSION }}/
+            shasum -a 512 ${{env.GUI_NAME}}-${{ matrix.build.TARGET }}.tar.gz > ${{env.GUI_NAME}}-${{ matrix.build.TARGET }}.tar.gz.sha512
           fi
 
       - name: Release notes
@@ -174,7 +168,8 @@ jobs:
       - name: Install Rust stable
         uses: dtolnay/rust-toolchain@stable
 
+      - name: Cache Cargo dependencies
+        uses: Swatinem/rust-cache@v2
+
       - name: Publish
-        run: |
-          cargo publish -p ironfoil-core --locked --token ${{ secrets.CARGO_REGISTRY_TOKEN }}
-          cargo publish -p ironfoil --locked --token ${{ secrets.CARGO_REGISTRY_TOKEN }}
+        run: cargo publish --locked --token ${{ secrets.CARGO_REGISTRY_TOKEN }}

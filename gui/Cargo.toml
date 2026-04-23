@@ -6,13 +6,7 @@ edition.workspace = true
 license.workspace = true
 repository.workspace = true
 authors.workspace = true
-
-[package.metadata.wix]
-upgrade-guid = "5A95C071-0E6C-4A6E-9553-4817DC6B8164"
-path-guid = "6E6AD6BA-08A7-4AB3-B49A-E7E3B9050319"
-license = false
-eula = false
-product-icon = "../media/icon-dark.ico"
+publish = false
 
 [lints]
 workspace = true
