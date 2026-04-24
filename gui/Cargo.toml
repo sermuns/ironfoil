@@ -13,7 +13,7 @@ workspace = true
 [dependencies]
 color-eyre.workspace = true
 eframe = { workspace = true, features = ["default_fonts", "glow", "persistence"] }
-egui = "0.33"
+egui = "0.34"
 egui_extras = { workspace = true, features = ["svg"] }
 egui-toast = "0.19"
 env_logger.workspace = true
