@@ -18,6 +18,22 @@ log = "0.4"
 color-eyre = "0.6"
 env_logger = "0.11"
 serde = { version = "1", features = ["derive"] }
+thiserror = "2"
+walkdir = "2"
+percent-encoding = "2.3"
+crc32c = "0.6"
+nusb = "0.2"
+indicatif = "0.18"
+clap = "4"
+eframe = { version = "0.33", default-features = false }
+egui = "0.33"
+egui_extras = "0.33"
+egui-toast = "0.19"
+strum = "0.28"
+rfd = "0.17"
+humansize = "2"
+image = { version = "0.25", default-features = false }
+vergen-gitcl = "9"
 
 [workspace.lints.clippy]
 pedantic = { level = "warn", priority = -1 }

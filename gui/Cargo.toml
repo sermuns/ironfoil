@@ -12,31 +12,21 @@ workspace = true
 
 [dependencies]
 color-eyre.workspace = true
-eframe = { version = "0.33", default-features = false, features = [
-    "default_fonts",
-    "glow",
-    "persistence",
-] }
+eframe = { workspace = true, features = ["default_fonts", "glow", "persistence"] }
 egui = "0.33"
-egui_extras = { version = "0.33", features = ["svg"] }
+egui_extras = { workspace = true, features = ["svg"] }
 egui-toast = "0.19"
 env_logger.workspace = true
 ironfoil-core = { path = "../core", version = "0.4.4" }
 log.workspace = true
 serde.workspace = true
-strum = { version = "0.28", features = ["derive"] }
+strum = { workspace = true, features = ["derive"] }
 rfd = "0.17"
 humansize = "2"
-image = { version = "0.25", default-features = false }
+image.workspace = true
 
 [target.'cfg(target_os = "linux")'.dependencies]
-eframe = { version = "0.33", default-features = false, features = [
-    "default_fonts",
-    "glow",
-    "persistence",
-    "x11",
-    "wayland"
-] }
+eframe = { workspace = true, features = ["default_fonts", "glow", "persistence", "x11", "wayland"] }
 
 [build-dependencies]
-vergen-gitcl  = "9.1.0"
+vergen-gitcl.workspace = true

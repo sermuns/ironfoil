@@ -13,15 +13,15 @@ workspace = true
 [dependencies]
 color-eyre.workspace = true
 log.workspace = true
-thiserror = "2"
-walkdir = "2"
+thiserror.workspace = true
+walkdir.workspace = true
 
 # network
-percent-encoding = { version = "2.3", optional = true }
+percent-encoding = { workspace = true, optional = true }
 
 # usb
-crc32c = { version = "0.6", optional = true }
-nusb = { version = "0.2", optional = true }
+crc32c = { workspace = true, optional = true }
+nusb = { workspace = true, optional = true }
 serde = { workspace = true, optional = true }
 
 [dev-dependencies]
