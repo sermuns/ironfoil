@@ -1,18 +1,29 @@
 # Changelog
 
-## [0.4.4](https://github.com/sermuns/ironfoil/compare/v0.4.3..0.4.4) - 2026-04-23
+## [0.4.4](https://github.com/sermuns/ironfoil/compare/v0.4.3..0.4.4) - 2026-04-24
 
 ### 🐛 Bug Fixes
 
 - **(ci)** fix typo by @sermuns in [1fefaa1](https://github.com/sermuns/ironfoil/commit/1fefaa167860468f8d09fe5149860cb6de7245f9)
-- **(ci)** actually build ironfoil-gui by Samuel Åkesson in [f093a0a](https://github.com/sermuns/ironfoil/commit/f093a0a8196c76396addeef2a92adedf234c9e8d)
+- **(ci)** actually build ironfoil-gui by @sermuns in [e2559f2](https://github.com/sermuns/ironfoil/commit/e2559f221bec57041e201eb158a4b7ac17549121)
+- **(ci)** glob release correctly by @sermuns in [b857be4](https://github.com/sermuns/ironfoil/commit/b857be4c2daf3d7f18323aac64d4e4a342c0f5ea)
 - **(cli)** show correct amount of games installed by @sermuns in [770d22a](https://github.com/sermuns/ironfoil/commit/770d22adc5a1aefef45ea1c4a9cd05670db8daa3)
+- **(gui)** add symlink to media, hopefully fixed packaging by Samuel Åkesson in [c42dcbf](https://github.com/sermuns/ironfoil/commit/c42dcbf293ffe7369df86a9f54f7705e13c7fd50)
+
+### ⚡ Performance
+
+- **(ci)** broader cache in release by Samuel Åkesson in [6c95938](https://github.com/sermuns/ironfoil/commit/6c95938d2a3f86e5280bc04563fd5921171426e7)
 
 ### ⚙️ Miscellaneous Tasks
 
+- **(gui)** add "of which" by @sermuns in [b83e48d](https://github.com/sermuns/ironfoil/commit/b83e48dae252533bf3bd2a40b3e8b7485670d6be)
 - **breaking** consolidate gui and cli releasing. remove Windows installer by @sermuns in [7ea8e35](https://github.com/sermuns/ironfoil/commit/7ea8e35ba46c571a5c776527fd7feb4c7c15af06)
 - publish GUI too by @sermuns in [d69ff38](https://github.com/sermuns/ironfoil/commit/d69ff3805ee4969f8fcbbc1417b66440f3a5b7df)
 - rename release CI by @sermuns in [f2dd07f](https://github.com/sermuns/ironfoil/commit/f2dd07f5a54beba503f468918ba3443e197ae1d2)
+- add dependabot by Samuel Åkesson in [7910f71](https://github.com/sermuns/ironfoil/commit/7910f718d6aa20dd9a7ce69668e11755579d7a51)
+- update deps by Samuel Åkesson in [5030c21](https://github.com/sermuns/ironfoil/commit/5030c21601c41ebe3a861c2b98a0e3889c857fa4)
+- add github-actions to dependabot alerts by Samuel Åkesson in [db36b00](https://github.com/sermuns/ironfoil/commit/db36b0015483c5b1c4c4faca074676c980fa0a77)
+- release v0.4.4 by Samuel Åkesson in [01a0095](https://github.com/sermuns/ironfoil/commit/01a00956fd8541f4ce9e416a82b567ef23eea19d)
 ## [v0.4.3](https://github.com/sermuns/ironfoil/compare/v0.4.2..v0.4.3) - 2026-04-23
 
 ### 📚 Documentation
