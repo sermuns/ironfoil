@@ -105,6 +105,8 @@ jobs:
 
       - name: Cache Cargo dependencies
         uses: Swatinem/rust-cache@v2
+        with:
+          shared-key: ${{ matrix.build.TARGET }}
 
       - name: Build
         run: cargo build --release --locked --target ${{ matrix.build.TARGET }}
