@@ -308,8 +308,9 @@ pub fn show(
                     staged_files.selected_count(),
                     staged_files.selected_human_size(),
                 ));
+                ui.weak("of which");
                 ui.weak(format!(
-                    "{} staged ({})",
+                    "{} staged ({}),",
                     staged_files.count(),
                     staged_files.human_size(),
                 ));
