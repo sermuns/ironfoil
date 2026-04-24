@@ -147,7 +147,7 @@ jobs:
       - name: Upload the binary releases
         uses: svenstaro/upload-release-action@v2
         with:
-          file: ${{env.CRATE_NAME}}-${{ matrix.build.TARGET }}*
+          file: "*-${{ matrix.build.TARGET }}*"
           file_glob: true
           overwrite: true
           tag: ${{ github.ref }}
