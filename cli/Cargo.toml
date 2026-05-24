@@ -17,5 +17,5 @@ workspace = true
 clap = { workspace = true, features = ["derive"] }
 color-eyre.workspace = true
 env_logger.workspace = true
-ironfoil-core = { path = "../core", version = "0.4.4" }
+ironfoil-core = { path = "../core", version = "0.4.5" }
 indicatif.workspace = true
