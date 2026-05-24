@@ -2,7 +2,7 @@ use color_eyre::eyre::bail;
 use std::path::{Path, PathBuf};
 use walkdir::WalkDir;
 
-pub const GAME_BACKUP_EXTENSIONS: [&str; 3] = ["nsp", "xci", "nsz"];
+pub const GAME_BACKUP_EXTENSIONS: [&str; 4] = ["nsp", "xci", "nsz", "xcz"];
 pub const RCM_PAYLOAD_EXTENSIONS: [&str; 1] = ["bin"];
 
 fn is_game_backup(path: &Path) -> bool {
