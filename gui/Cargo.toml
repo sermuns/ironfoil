@@ -13,16 +13,16 @@ workspace = true
 [dependencies]
 color-eyre.workspace = true
 eframe = { workspace = true, features = ["default_fonts", "glow", "persistence"] }
-egui = "0.33"
+egui.workspace = true
 egui_extras = { workspace = true, features = ["svg"] }
-egui-toast = "0.19"
+egui-toast.workspace = true
 env_logger.workspace = true
 ironfoil-core = { path = "../core", version = "0.4.5" }
 log.workspace = true
 serde.workspace = true
 strum = { workspace = true, features = ["derive"] }
-rfd = "0.17"
-humansize = "2"
+rfd.workspace = true
+humansize.workspace = true
 image.workspace = true
 
 [target.'cfg(target_os = "linux")'.dependencies]

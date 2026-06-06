@@ -1,11 +1,9 @@
-use egui::{Align, Align2, Button, Color32, Layout, RichText, TextWrapMode, Theme};
-use egui_toast::Toast;
-use egui_toast::ToastKind;
-use egui_toast::ToastOptions;
-use egui_toast::Toasts;
+use egui::{
+    Align, Align2, Button, CentralPanel, Color32, Layout, Panel, RichText, TextWrapMode, Theme,
+};
+use egui_toast::{Toast, ToastKind, Toasts};
 use serde::{Deserialize, Serialize};
-use std::net::Ipv4Addr;
-use std::time::Duration;
+use std::{net::Ipv4Addr, time::Duration};
 use strum::IntoEnumIterator;
 
 use crate::tabs::Tab;
@@ -64,21 +62,21 @@ impl App {
 }
 
 impl eframe::App for App {
-    fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
-        egui::TopBottomPanel::top("top_panel").show(ctx, |ui| {
+    fn ui(&mut self, ui: &mut egui::Ui, _frame: &mut eframe::Frame) {
+        Panel::top("top_panel").show_inside(ui, |ui| {
             egui::MenuBar::new().ui(ui, |ui| {
                 ui.menu_button("File", |ui| {
                     if ui.button("Quit").clicked() {
-                        ctx.send_viewport_cmd(egui::ViewportCommand::Close);
+                        ui.send_viewport_cmd(egui::ViewportCommand::Close);
                     }
                 });
                 egui::widgets::global_theme_preference_buttons(ui);
             });
         });
 
-        egui::SidePanel::left("left_panel")
+        Panel::left("left_panel")
             .resizable(false)
-            .show(ctx, |ui| {
+            .show_inside(ui, |ui| {
                 for tab in Tab::iter() {
                     let is_current =
                         std::mem::discriminant(&tab) == std::mem::discriminant(&self.tab);
@@ -98,9 +96,9 @@ impl eframe::App for App {
                 }
             });
 
-        egui::TopBottomPanel::bottom("footer")
+        Panel::bottom("footer")
             .resizable(false)
-            .show(ctx, |ui| {
+            .show_inside(ui, |ui| {
                 ui.with_layout(Layout::right_to_left(Align::Center), |ui| {
                     ui.label(env!("VERGEN_GIT_DESCRIBE"));
                     ui.hyperlink_to(
@@ -110,18 +108,19 @@ impl eframe::App for App {
                 });
             });
 
-        egui::CentralPanel::default().show(ctx, |ui| {
+        CentralPanel::default().show_inside(ui, |ui| {
             self.tab.show(
                 ui,
-                ctx.theme(),
+                ui.theme(),
                 &mut self.toasts,
                 &mut self.target_ip_string,
                 &mut self.target_ip,
             );
-            self.toasts.show(ctx);
+            self.toasts.show(ui);
         });
 
-        ctx.request_repaint_after(Duration::from_millis(100));
+        // FIXME:
+        ui.request_repaint_after(Duration::from_millis(100));
     }
 
     fn save(&mut self, storage: &mut dyn eframe::Storage) {
@@ -133,7 +132,6 @@ pub fn add_toast(toasts: &mut Toasts, kind: ToastKind, text: impl Into<egui::Wid
     toasts.add(Toast {
         kind,
         text: text.into(),
-        options: ToastOptions::default(),
         // .duration_in_seconds(10.)
         // .show_progress(true),
         ..Default::default()
