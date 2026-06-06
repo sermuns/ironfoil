@@ -8,11 +8,11 @@ fn main() -> eframe::Result {
 
     let icon_image = image::load_from_memory(include_bytes!("../media/icon-dark.png")).unwrap();
     let native_options = eframe::NativeOptions {
-        viewport: egui::ViewportBuilder::default().with_icon(std::sync::Arc::new(egui::IconData {
+        viewport: egui::ViewportBuilder::default().with_icon(egui::IconData {
             rgba: icon_image.to_rgba8().to_vec(),
             width: icon_image.width(),
             height: icon_image.height(),
-        })),
+        }),
         ..Default::default()
     };
 

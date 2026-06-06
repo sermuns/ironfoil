@@ -64,8 +64,10 @@ impl App {
 }
 
 impl eframe::App for App {
-    fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
-        egui::TopBottomPanel::top("top_panel").show(ctx, |ui| {
+    fn ui(&mut self, ui: &mut egui::Ui, _frame: &mut eframe::Frame) {
+        let ctx = ui.ctx();
+
+        egui::Panel::top("top_panel").show(ctx, |ui| {
             egui::MenuBar::new().ui(ui, |ui| {
                 ui.menu_button("File", |ui| {
                     if ui.button("Quit").clicked() {
@@ -118,7 +120,7 @@ impl eframe::App for App {
                 &mut self.target_ip_string,
                 &mut self.target_ip,
             );
-            self.toasts.show(ctx);
+            self.toasts.show(ui);
         });
 
         ctx.request_repaint_after(Duration::from_millis(100));
