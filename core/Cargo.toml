@@ -24,11 +24,16 @@ crc32c = { workspace = true, optional = true }
 nusb = { workspace = true, optional = true }
 serde = { workspace = true, optional = true }
 
+# archives
+unrar = { workspace = true, optional = true }
+zip = { workspace = true, optional = true }
+
 [dev-dependencies]
 rstest = "0.26"
 
 [features]
-default = ["network", "rcm", "usb"]
+default = ["network", "rcm", "usb", "archives"]
 network = ["dep:percent-encoding"]
 rcm = ["dep:nusb"]
 usb = ["dep:crc32c", "dep:nusb", "dep:serde"]
+archives = ["dep:unrar", "dep:zip"]

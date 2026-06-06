@@ -32,8 +32,10 @@ rfd = "0.17"
 serde = { version = "1", features = ["derive"] }
 strum = "0.28"
 thiserror = "2"
+unrar = "0.5"
 vergen-gitcl = "9"
 walkdir = "2"
+zip = "8"
 
 [workspace.lints.clippy]
 pedantic = { level = "warn", priority = -1 }
