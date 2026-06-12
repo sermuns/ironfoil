@@ -32,7 +32,7 @@ rfd = "0.17"
 serde = { version = "1", features = ["derive"] }
 strum = "0.28"
 thiserror = "2"
-vergen-gitcl = "9"
+vergen-gitcl = "10"
 walkdir = "2"
 
 [workspace.lints.clippy]
