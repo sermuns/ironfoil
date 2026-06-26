@@ -20,7 +20,7 @@ crc32c = "0.6"
 eframe = { version = "0.34", default-features = false }
 egui = "0.34"
 egui-toast = "0.20"
-egui_extras = "0.34"
+egui_extras = "0.35"
 env_logger = "0.11"
 humansize = "2"
 image = { version = "0.25", default-features = false }
