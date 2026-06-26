@@ -18,7 +18,7 @@ clap = "4"
 color-eyre = "0.6"
 crc32c = "0.6"
 eframe = { version = "0.34", default-features = false }
-egui = "0.34"
+egui = "0.35"
 egui-toast = "0.20"
 egui_extras = "0.34"
 env_logger = "0.11"
