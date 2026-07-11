@@ -22,5 +22,5 @@ pass_filenames = false
 id = "cargo-fmt"
 name = "format code"
 language = "system"
-entry = "cargo fmt"
+entry = "cargo fmt --all"
 pass_filenames = false

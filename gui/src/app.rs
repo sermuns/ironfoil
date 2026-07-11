@@ -74,39 +74,34 @@ impl eframe::App for App {
             });
         });
 
-        Panel::left("left_panel")
-            .resizable(false)
-            .show(ui, |ui| {
-                for tab in Tab::iter() {
-                    let is_current =
-                        std::mem::discriminant(&tab) == std::mem::discriminant(&self.tab);
+        Panel::left("left_panel").resizable(false).show(ui, |ui| {
+            for tab in Tab::iter() {
+                let is_current = std::mem::discriminant(&tab) == std::mem::discriminant(&self.tab);
 
-                    let text = RichText::new(tab.as_str()).size(16.);
+                let text = RichText::new(tab.as_str()).size(16.);
 
-                    let response = ui.add_sized(
-                        [ui.available_width(), 32.0],
-                        Button::selectable(is_current, text)
-                            .wrap_mode(TextWrapMode::Extend)
-                            .right_text(""),
-                    );
+                let response = ui.add_sized(
+                    [ui.available_width(), 32.0],
+                    Button::selectable(is_current, text)
+                        .wrap_mode(TextWrapMode::Extend)
+                        .right_text(""),
+                );
 
-                    if response.clicked() {
-                        self.tab = tab;
-                    }
+                if response.clicked() {
+                    self.tab = tab;
                 }
-            });
+            }
+        });
 
-        Panel::bottom("footer")
-            .resizable(false)
-            .show(ui, |ui| {
-                ui.with_layout(Layout::right_to_left(Align::Center), |ui| {
-                    ui.label(env!("VERGEN_GIT_DESCRIBE"));
-                    ui.hyperlink_to(
-                        env!("CARGO_PKG_NAME"),
-                        "https://github.com/sermuns/ironfoil",
-                    );
-                });
+        Panel::bottom("footer").resizable(false).show(ui, |ui| {
+            ui.with_layout(Layout::right_to_left(Align::Center), |ui| {
+                ui.label(env!("VERGEN_GIT_DESCRIBE"));
+                ui.hyperlink_to(
+                    env!("CARGO_PKG_NAME"),
+                    "https://github.com/sermuns/ironfoil",
+                );
             });
+        });
 
         CentralPanel::default().show(ui, |ui| {
             self.tab.show(
