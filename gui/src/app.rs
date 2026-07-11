@@ -63,7 +63,7 @@ impl App {
 
 impl eframe::App for App {
     fn ui(&mut self, ui: &mut egui::Ui, _frame: &mut eframe::Frame) {
-        Panel::top("top_panel").show_inside(ui, |ui| {
+        Panel::top("top_panel").show(ui, |ui| {
             egui::MenuBar::new().ui(ui, |ui| {
                 ui.menu_button("File", |ui| {
                     if ui.button("Quit").clicked() {
@@ -76,7 +76,7 @@ impl eframe::App for App {
 
         Panel::left("left_panel")
             .resizable(false)
-            .show_inside(ui, |ui| {
+            .show(ui, |ui| {
                 for tab in Tab::iter() {
                     let is_current =
                         std::mem::discriminant(&tab) == std::mem::discriminant(&self.tab);
@@ -98,7 +98,7 @@ impl eframe::App for App {
 
         Panel::bottom("footer")
             .resizable(false)
-            .show_inside(ui, |ui| {
+            .show(ui, |ui| {
                 ui.with_layout(Layout::right_to_left(Align::Center), |ui| {
                     ui.label(env!("VERGEN_GIT_DESCRIBE"));
                     ui.hyperlink_to(
@@ -108,7 +108,7 @@ impl eframe::App for App {
                 });
             });
 
-        CentralPanel::default().show_inside(ui, |ui| {
+        CentralPanel::default().show(ui, |ui| {
             self.tab.show(
                 ui,
                 ui.theme(),
