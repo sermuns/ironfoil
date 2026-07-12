@@ -1,32 +1,38 @@
 [package]
 name = "ironfoil-gui"
-description = "GUI for ironfoil"
 version.workspace = true
-edition.workspace = true
-license.workspace = true
-repository.workspace = true
 authors.workspace = true
-
-[lints]
-workspace = true
+edition.workspace = true
+description = "GUI for ironfoil"
+repository.workspace = true
+license.workspace = true
 
 [dependencies]
 color-eyre.workspace = true
-eframe = { workspace = true, features = ["default_fonts", "glow", "persistence"] }
+eframe = {
+  workspace = true,
+  features = ["default_fonts", "glow", "persistence"]
+}
 egui.workspace = true
 egui_extras = { workspace = true, features = ["svg"] }
 egui-toast.workspace = true
 env_logger.workspace = true
-ironfoil-core = { path = "../core", version = "0.4.5" }
-log.workspace = true
-serde.workspace = true
-strum = { workspace = true, features = ["derive"] }
-rfd.workspace = true
 humansize.workspace = true
 image.workspace = true
-
-[target.'cfg(target_os = "linux")'.dependencies]
-eframe = { workspace = true, features = ["default_fonts", "glow", "persistence", "x11", "wayland"] }
+ironfoil-core = { path = "../core", version = "0.4.5" }
+log.workspace = true
+rfd.workspace = true
+serde.workspace = true
+strum = { workspace = true, features = ["derive"] }
 
 [build-dependencies]
 vergen-gitcl.workspace = true
+
+[target.'cfg(target_os = "linux")'.dependencies]
+eframe = {
+  workspace = true,
+  features = ["default_fonts", "glow", "persistence", "wayland", "x11"]
+}
+
+[lints]
+workspace = true

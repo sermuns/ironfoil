@@ -1,21 +1,21 @@
 [package]
 name = "ironfoil"
-description = "Transfer to NS title installers from the command-line"
 version.workspace = true
-edition.workspace = true
-license.workspace = true
-repository.workspace = true
 authors.workspace = true
+edition.workspace = true
+description = "Transfer to NS title installers from the command-line"
+repository.workspace = true
+license.workspace = true
 
 [package.metadata.dist]
 dist = false
 
-[lints]
-workspace = true
-
 [dependencies]
-clap = { workspace = true, features = ["derive"] }
+clap.workspace = true
 color-eyre.workspace = true
 env_logger.workspace = true
-ironfoil-core = { path = "../core", version = "0.4.5" }
 indicatif.workspace = true
+ironfoil-core = { path = "../core", version = "0.4.5" }
+
+[lints]
+workspace = true

@@ -8,19 +8,19 @@ members = [
 
 [workspace.package]
 version = "0.4.5"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-repository = "https://github.com/sermuns/ironfoil"
 authors = ["sermuns <sermuns@lysator.liu.se>"]
+edition = "2024"
+repository = "https://github.com/sermuns/ironfoil"
+license = "MIT OR Apache-2.0"
 
 [workspace.dependencies]
-clap = "4"
+clap = { version = "4", features = ["derive"] }
 color-eyre = "0.6"
 crc32c = "0.6"
 eframe = { version = "0.35", default-features = false }
 egui = "0.35"
-egui-toast = "0.21"
 egui_extras = "0.35"
+egui-toast = "0.21"
 env_logger = "0.11"
 humansize = "2"
 image = { version = "0.25", default-features = false }
@@ -36,24 +36,24 @@ vergen-gitcl = "10"
 walkdir = "2"
 
 [workspace.lints.clippy]
-pedantic = { level = "warn", priority = -1 }
-uninlined_format_args.level = "allow"
-trivially_copy_pass_by_ref.level = "deny"
+cast_possible_truncation = "allow"  # i mean we all have 64-bit PCs, right????
+cast_precision_loss = "allow"
 items_after_statements = "allow"
-cast_possible_truncation = "allow" # i mean we all have 64-bit PCs, right????
 missing_errors_doc = "allow"
 missing_panics_doc = "allow"
 needless_pass_by_value = "allow"
-cast_precision_loss = "allow"
+pedantic = { level = "warn", priority = -1 }
 too_many_arguments = "allow"
+trivially_copy_pass_by_ref.level = "deny"
+uninlined_format_args.level = "allow"
 
 [profile.release]
 opt-level = 3
 debug = false
-panic = "unwind"
-lto = true
-codegen-units = 1
 strip = false
+lto = true
+panic = "unwind"
+codegen-units = 1
 
 [profile.dist]
 inherits = "release"
