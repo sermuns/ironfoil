@@ -218,7 +218,7 @@ pub fn perform_tinfoil_network_install(
         .concat(),
     )?;
 
-    debug!("sent initiating data {}", &urls_with_newlines);
+    debug!("sent initiating data {}", urls_with_newlines);
 
     let mut keepalive_buf = Vec::new();
     loop {

@@ -57,7 +57,7 @@ pub fn file_range_command(
 ) -> color_eyre::Result<()> {
     usb_reader.read_exact(command_header)?;
 
-    debug!("got file range header: {:#?}", &command_header);
+    debug!("got file range header: {:#?}", command_header);
 
     let range_size = usize::from_le_bytes(command_header[..8].try_into().unwrap());
     let range_offset = u64::from_le_bytes(command_header[8..16].try_into().unwrap());
@@ -165,7 +165,7 @@ pub fn do_workloop(
         debug!("waiting for header...");
         usb_reader.read_exact(&mut command_header)?;
 
-        debug!("got header: {:#?}", &command_header);
+        debug!("got header: {:#?}", command_header);
         if &command_header[..4] != b"TUC0" {
             error!("invalid command header magic. continuing to next iteration...");
             continue;
@@ -179,7 +179,7 @@ pub fn do_workloop(
 
         debug!(
             "Command type: {:?}, Command id: {:?}",
-            &command_type, &command_id
+            command_type, command_id
         );
 
         match command_id {
