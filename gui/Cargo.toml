@@ -9,10 +9,7 @@ license.workspace = true
 
 [dependencies]
 color-eyre.workspace = true
-eframe = {
-  workspace = true,
-  features = ["default_fonts", "glow", "persistence"]
-}
+eframe = { workspace = true, features = ["default_fonts", "glow", "persistence"] }
 egui.workspace = true
 egui_extras = { workspace = true, features = ["svg"] }
 egui-toast.workspace = true
