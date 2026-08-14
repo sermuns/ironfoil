@@ -18,7 +18,7 @@ clap = { version = "4", features = ["derive"] }
 color-eyre = "0.6"
 crc32c = "0.6"
 eframe = { version = "0.35", default-features = false }
-egui = "0.35"
+egui = "0.36"
 egui_extras = "0.35"
 egui-toast = "0.21"
 env_logger = "0.11"
