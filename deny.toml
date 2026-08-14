@@ -37,4 +37,4 @@ unknown-registry = "deny"
 unknown-git = "warn"
 
 [advisories]
-ignore = ["RUSTSEC-2026-0195", "RUSTSEC-2026-0194"]
+ignore = []
