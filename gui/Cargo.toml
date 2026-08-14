@@ -16,7 +16,7 @@ egui-toast.workspace = true
 env_logger.workspace = true
 humansize.workspace = true
 image.workspace = true
-ironfoil-core = { path = "../core", version = "0.4.5" }
+ironfoil-core = { path = "../core", version = "0.4.6" }
 log.workspace = true
 rfd.workspace = true
 serde.workspace = true

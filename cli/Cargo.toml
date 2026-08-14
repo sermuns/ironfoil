@@ -15,7 +15,7 @@ clap.workspace = true
 color-eyre.workspace = true
 env_logger.workspace = true
 indicatif.workspace = true
-ironfoil-core = { path = "../core", version = "0.4.5" }
+ironfoil-core = { path = "../core", version = "0.4.6" }
 
 [lints]
 workspace = true

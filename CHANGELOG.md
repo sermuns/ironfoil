@@ -1,6 +1,47 @@
 # Changelog
 
-## [0.4.5](https://github.com/sermuns/ironfoil/compare/v0.4.4..0.4.5) - 2026-05-24
+## [0.4.6](https://github.com/sermuns/ironfoil/compare/v0.4.5..0.4.6) - 2026-08-14
+
+### 🐛 Bug Fixes
+
+- **(gui)** use inline toml table for eframe dependency by @sermuns in [ef2cd57](https://github.com/sermuns/ironfoil/commit/ef2cd577509265ac9065b21d14e9bba562c55afd)
+- cargo-fmt all by @sermuns in [aa9518d](https://github.com/sermuns/ironfoil/commit/aa9518de43690c5e357b599f8876f924811c1288)
+
+### 💼 Other
+
+- **(deps)** bump vergen-gitcl from 9.1.0 to 10.0.0 (#34) by @dependabot[bot] in [#34](https://github.com/sermuns/ironfoil/pull/34)
+- **(deps)** bump actions/checkout from 6 to 7 by @dependabot[bot] in [#35](https://github.com/sermuns/ironfoil/pull/35)
+- **(deps)** bump nusb from 0.2.3 to 0.2.4 by @dependabot[bot] in [#37](https://github.com/sermuns/ironfoil/pull/37)
+- **(deps)** bump vergen-gitcl from 10.0.0 to 10.0.1 by @dependabot[bot] in [#38](https://github.com/sermuns/ironfoil/pull/38)
+- **(deps)** bump env_logger from 0.11.10 to 0.11.11 by @dependabot[bot] in [#40](https://github.com/sermuns/ironfoil/pull/40)
+- **(deps)** bump indicatif from 0.18.4 to 0.18.6 by @dependabot[bot] in [#42](https://github.com/sermuns/ironfoil/pull/42)
+- **(deps)** bump log from 0.4.32 to 0.4.33 by @dependabot[bot] in [#41](https://github.com/sermuns/ironfoil/pull/41)
+- **(deps)** bump egui from 0.34 to 0.35 by @sermuns in [b84683c](https://github.com/sermuns/ironfoil/commit/b84683cbf4147e8edcc48256fcb9a95ed90b70f8)
+- **(deps)** bump clap from 4.6.1 to 4.6.2 by @dependabot[bot] in [#46](https://github.com/sermuns/ironfoil/pull/46)
+- **(deps)** bump nusb from 0.2.4 to 0.2.5 by @dependabot[bot] in [#45](https://github.com/sermuns/ironfoil/pull/45)
+- **(deps)** bump thiserror from 2.0.18 to 2.0.19 by @dependabot[bot] in [#48](https://github.com/sermuns/ironfoil/pull/48)
+- **(deps)** bump clap from 4.6.2 to 4.6.4 by @dependabot[bot] in [#47](https://github.com/sermuns/ironfoil/pull/47)
+- **(deps)** bump taiki-e/install-action from 2 to 2.85.3 by @dependabot[bot] in [#49](https://github.com/sermuns/ironfoil/pull/49)
+- **(deps)** bump nusb from 0.2.5 to 0.2.7 by @dependabot[bot] in [#52](https://github.com/sermuns/ironfoil/pull/52)
+- **(deps)** bump dependencies by @sermuns in [e3bd6e2](https://github.com/sermuns/ironfoil/commit/e3bd6e255a6e7493fa807e04f956942c5f2bdba0)
+- add CI by @sermuns in [28a3514](https://github.com/sermuns/ironfoil/commit/28a351458c8a51ad09c803480c6dc2a36cdad3f8)
+
+### 🚜 Refactor
+
+- **(gui)** migrate to egui 0.34 (#33) by @sermuns in [#33](https://github.com/sermuns/ironfoil/pull/33)
+
+### 🎨 Styling
+
+- satisfy new 1.97 lints by @sermuns in [94ae03d](https://github.com/sermuns/ironfoil/commit/94ae03d5538729efe908c70889da12d1006d16fc)
+- format all toml files by @sermuns in [9779bd0](https://github.com/sermuns/ironfoil/commit/9779bd0062f68ecd1e1656ef50d52498dbd6f57e)
+
+### ⚙️ Miscellaneous Tasks
+
+- add cargo-deny by @sermuns in [da5df51](https://github.com/sermuns/ironfoil/commit/da5df51b9ee8cf5de63ce115ad41555efb0180dd)
+- ignore rust advisories by @sermuns in [7b9a493](https://github.com/sermuns/ironfoil/commit/7b9a493742fb3adaaa398cb6a486eeeb4c262d90)
+- update cargo-deny by @sermuns in [d78abb6](https://github.com/sermuns/ironfoil/commit/d78abb6e2d0c58e5d4d522481eb3ef8fe2ce3b9a)
+- release v0.4.6 by Samuel Åkesson in [627dd10](https://github.com/sermuns/ironfoil/commit/627dd101e9435ee36bb2caa17423d5c4f85d3f55)
+## [v0.4.5](https://github.com/sermuns/ironfoil/compare/v0.4.4..v0.4.5) - 2026-05-24
 
 ### 🚀 Features
 
@@ -8,7 +49,7 @@
 
 ### ⚙️ Miscellaneous Tasks
 
-- release v0.4.5 by Samuel Åkesson in [924ebab](https://github.com/sermuns/ironfoil/commit/924ebab3af79640b2dd104ad9d4130be2333f5f3)
+- release v0.4.5 by @sermuns in [cdbb80c](https://github.com/sermuns/ironfoil/commit/cdbb80c15007620537dacb0ea301f2e56673cf9f)
 ## [v0.4.4](https://github.com/sermuns/ironfoil/compare/v0.4.3..v0.4.4) - 2026-04-24
 
 ### 🐛 Bug Fixes
