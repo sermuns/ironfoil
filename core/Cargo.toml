@@ -22,7 +22,7 @@ nusb = { workspace = true, optional = true }
 serde = { workspace = true, optional = true }
 
 [dev-dependencies]
-rstest = "0.26"
+rstest.workspace = true
 
 [features]
 default = ["network", "rcm", "usb"]

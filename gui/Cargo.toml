@@ -26,10 +26,7 @@ strum = { workspace = true, features = ["derive"] }
 vergen-gitcl.workspace = true
 
 [target.'cfg(target_os = "linux")'.dependencies]
-eframe = {
-  workspace = true,
-  features = ["default_fonts", "glow", "persistence", "wayland", "x11"]
-}
+eframe = { workspace = true, features = ["default_fonts", "glow", "persistence", "wayland", "x11"] }
 
 [lints]
 workspace = true
