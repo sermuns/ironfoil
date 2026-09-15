@@ -1,6 +1,17 @@
 # Changelog
 
-## [0.4.6](https://github.com/sermuns/ironfoil/compare/v0.4.5..0.4.6) - 2026-08-14
+## [0.4.7](https://github.com/sermuns/ironfoil/compare/v0.4.6..0.4.7) - 2026-09-15
+
+### 💼 Other
+
+- **(deps)** bump taiki-e/install-action from 2.85.3 to 2.87.8 by @dependabot[bot] in [#63](https://github.com/sermuns/ironfoil/pull/63)
+- **(deps)** bump vergen-gitcl from 10.0.2 to 10.0.3 by @dependabot[bot] in [#61](https://github.com/sermuns/ironfoil/pull/61)
+- **(deps)** bump egui to 0.36 among others by @sermuns in [b623024](https://github.com/sermuns/ironfoil/commit/b6230240dfce7528d82f70235ffb95089fbabe63)
+
+### ⚙️ Miscellaneous Tasks
+
+- release v0.4.7 by Samuel Åkesson in [1d22753](https://github.com/sermuns/ironfoil/commit/1d227534a4dff289c7a926fe3a0b910775975680)
+## [v0.4.6](https://github.com/sermuns/ironfoil/compare/v0.4.5..v0.4.6) - 2026-08-14
 
 ### 🐛 Bug Fixes
 
@@ -40,7 +51,7 @@
 - add cargo-deny by @sermuns in [da5df51](https://github.com/sermuns/ironfoil/commit/da5df51b9ee8cf5de63ce115ad41555efb0180dd)
 - ignore rust advisories by @sermuns in [7b9a493](https://github.com/sermuns/ironfoil/commit/7b9a493742fb3adaaa398cb6a486eeeb4c262d90)
 - update cargo-deny by @sermuns in [d78abb6](https://github.com/sermuns/ironfoil/commit/d78abb6e2d0c58e5d4d522481eb3ef8fe2ce3b9a)
-- release v0.4.6 by Samuel Åkesson in [627dd10](https://github.com/sermuns/ironfoil/commit/627dd101e9435ee36bb2caa17423d5c4f85d3f55)
+- release v0.4.6 by @sermuns in [183afe0](https://github.com/sermuns/ironfoil/commit/183afe09a8d49664ce5a711a7a1fcc3b06c9d718)
 ## [v0.4.5](https://github.com/sermuns/ironfoil/compare/v0.4.4..v0.4.5) - 2026-05-24
 
 ### 🚀 Features
