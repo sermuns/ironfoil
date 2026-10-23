@@ -19,7 +19,7 @@ color-eyre = "0.6"
 crc32c = "0.6"
 eframe = { version = "0.36", default-features = false }
 egui = "0.36"
-egui_extras = "0.36"
+egui_extras = "0.37"
 egui-toast = "0.22"
 env_logger = "0.11"
 humansize = "2"
