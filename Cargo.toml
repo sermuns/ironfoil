@@ -1,9 +1,9 @@
 [workspace]
 resolver = "3"
 members = [
-  "cli",
-  "core",
-  "gui",
+  "ironfoil",
+  "ironfoil-core",
+  "ironfoil-gui",
 ]
 
 [workspace.package]
@@ -25,6 +25,7 @@ env_logger = "0.11"
 humansize = "2"
 image = { version = "0.25", default-features = false }
 indicatif = "0.18"
+ironfoil-core = { path = "./ironfoil-core" }
 log = "0.4"
 nusb = "0.2"
 percent-encoding = "2.3"
