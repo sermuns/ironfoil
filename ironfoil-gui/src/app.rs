@@ -48,16 +48,11 @@ impl App {
         let Some(storage) = cc.storage else {
             return App::default();
         };
-        eframe::get_value(storage, eframe::APP_KEY)
-            .map(|mut stored: App| {
-                // kinda shitty, but works
-                stored.target_ip_string = stored
-                    .target_ip
-                    .map(|ip| ip.to_string())
-                    .unwrap_or_default();
-                stored
-            })
-            .unwrap_or_default()
+        eframe::get_value(storage, eframe::APP_KEY).map_or_default(|mut stored: App| {
+            // kinda shitty, but works
+            stored.target_ip_string = stored.target_ip.map_or_default(|ip| ip.to_string());
+            stored
+        })
     }
 }
 
